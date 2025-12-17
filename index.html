@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Яскрава Рулетка</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #1e1e1e;
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .glass-panel {
+            background: #2a2a2a;
+            border: 2px solid #333;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .flat-btn {
+            background-color: #2563eb;
+            border: none;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 #1e40af;
+        }
+        .flat-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #1e40af;
+        }
+        .flat-btn:disabled {
+            background-color: #4b5563;
+            box-shadow: none;
+            transform: translateY(4px);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #333;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #555;
+            border-radius: 4px;
+        }
+
+        .pointer-sharp {
+            filter: drop-shadow(0 4px 2px rgba(0,0,0,0.5));
+            z-index: 20;
+            transform-origin: top center;
+            transition: transform 0.1s ease-out;
+        }
+        
+        .tense-timer {
+            font-family: 'Orbitron', sans-serif;
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.7);
+        }
+        .pulse-anim {
+            animation: pulse-red 0.5s infinite alternate;
+        }
+        @keyframes pulse-red {
+            from { transform: scale(1); text-shadow: 0 0 10px red; color: #fff; }
+            to { transform: scale(1.1); text-shadow: 0 0 20px red; color: #fca5a5; }
+        }
+
+        input[type="range"] {
+            accent-color: #2563eb;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <!-- Таймер -->
+    <div id="timer-container" class="hidden fixed top-10 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none">
+        <div class="bg-black/80 border-2 border-red-600 px-8 py-2 rounded-full backdrop-blur-md">
+            <span id="countdown-display" class="tense-timer text-5xl md:text-7xl font-black text-red-500 tracking-widest">
+                00.00
+            </span>
+        </div>
+    </div>
+
+    <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center h-full">
+            
+        <!-- ПАНЕЛЬ НАЛАШТУВАНЬ -->
+        <div id="config-panel" class="lg:col-span-4 glass-panel rounded-xl p-6 h-fit transition-all duration-300">
+            <h2 class="text-2xl font-black uppercase text-white mb-6 border-b-2 border-gray-700 pb-2">
+                Налаштування
+            </h2>
+
+            <div class="space-y-6">
+                <!-- Час -->
+                <div>
+                    <label class="text-sm text-gray-400 uppercase font-bold tracking-wider mb-2 block">
+                        Час обертання (до 60 сек)
+                    </label>
+                    <div class="flex items-center gap-4">
+                        <input type="range" id="spin-duration" min="1" max="60" value="10" class="flex-1 h-3 bg-gray-700 rounded-lg appearance-none cursor-pointer">
+                        <input type="number" id="duration-number" value="10" min="1" max="60" class="w-16 bg-gray-800 border border-gray-600 text-white text-center rounded p-1 font-bold">
+                    </div>
+                </div>
+
+                <!-- Список -->
+                <div>
+                    <div class="flex justify-between items-end mb-3">
+                        <label class="text-sm text-gray-400 uppercase font-bold tracking-wider block">Сектори</label>
+                        <button onclick="addItem()" class="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded font-bold uppercase transition-colors">
+                            + Додати
+                        </button>
+                    </div>
+                    
+                    <div id="items-list" class="space-y-2 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
+                    </div>
+                </div>
+            </div>
+
+            <button id="main-spin-btn" onclick="spinWheel()" class="flat-btn w-full mt-8 py-5 rounded-lg text-white font-black text-2xl uppercase tracking-widest">
+                КРУТИТИ!
+            </button>
+        </div>
+
+        <!-- ЗОНА КОЛЕСА -->
+        <div class="lg:col-span-8 flex flex-col items-center justify-center relative w-full h-full min-h-[500px]">
+            
+            <div class="relative w-[350px] h-[350px] sm:w-[500px] sm:h-[500px] md:w-[600px] md:h-[600px]">
+                <!-- Контейнер стрілки (Центрування) -->
+                <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 z-20">
+                    <!-- Сама стрілка (Анімація повороту) -->
+                    <div id="pointer-body" class="pointer-sharp w-0 h-0 border-l-[25px] border-l-transparent border-r-[25px] border-r-transparent border-t-[50px] border-t-red-600 drop-shadow-lg origin-[50%_0%]"></div>
+                </div>
+
+                <!-- Саме колесо -->
+                <canvas id="wheel-canvas" width="600" height="600" class="w-full h-full rounded-full shadow-2xl ring-8 ring-gray-800 bg-gray-800"></canvas>
+                
+                <!-- Центр колеса -->
+                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-gray-900 rounded-full shadow-xl flex items-center justify-center z-10 border-4 border-gray-700">
+                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+                         <span class="text-black font-black text-xl">GO</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Модальне вікно переможця -->
+    <div id="result-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/90 backdrop-blur-sm">
+        <div class="bg-[#2a2a2a] border-4 border-white p-8 rounded-2xl max-w-md w-full text-center transform scale-100 transition-all shadow-2xl">
+            
+            <h2 class="text-3xl font-black text-white uppercase mb-4 tracking-wider">Результат</h2>
+            
+            <div class="my-8">
+                <div id="winner-img-container" class="w-40 h-40 rounded-full mx-auto mb-6 bg-cover bg-center border-8 border-white shadow-lg hidden"></div>
+                <div id="winner-text" class="text-4xl md:text-5xl font-black text-yellow-400 break-words leading-tight"></div>
+            </div>
+
+            <button onclick="closeModal()" class="w-full py-4 bg-white hover:bg-gray-200 text-black rounded-xl font-bold text-xl uppercase transition-colors">
+                OK
+            </button>
+        </div>
+    </div>
+
+<script>
+    // --- КОЛЬОРИ ---
+    const flatColors = [
+        '#FF3B30', '#FF9500', '#FFCC00', '#4CD964', 
+        '#5AC8FA', '#007AFF', '#5856D6', '#FF2D55'
+    ];
+
+    let items = [
+        { id: 1, text: "Піца", color: "#FF3B30", weight: 1, image: null, imgObj: null },
+        { id: 2, text: "Суші", color: "#007AFF", weight: 1, image: null, imgObj: null },
+        { id: 3, text: "Кава", color: "#FFCC00", weight: 1, image: null, imgObj: null },
+    ];
+
+    let spinDuration = 10;
+    let isSpinning = false;
+    let currentRotation = 0;
+
+    // Elements
+    const itemsList = document.getElementById('items-list');
+    const canvas = document.getElementById('wheel-canvas');
+    const ctx = canvas.getContext('2d');
+    const durationInput = document.getElementById('spin-duration');
+    const durationNumber = document.getElementById('duration-number');
+    const resultModal = document.getElementById('result-modal');
+    const winnerText = document.getElementById('winner-text');
+    const winnerImgContainer = document.getElementById('winner-img-container');
+    const timerContainer = document.getElementById('timer-container');
+    const countdownDisplay = document.getElementById('countdown-display');
+    const pointerBody = document.getElementById('pointer-body');
+
+    function init() {
+        renderItemsList();
+        drawWheel();
+        
+        durationInput.addEventListener('input', (e) => {
+            const val = parseInt(e.target.value);
+            spinDuration = val;
+            durationNumber.value = val;
+        });
+        durationNumber.addEventListener('input', (e) => {
+            let val = parseInt(e.target.value);
+            if(val > 60) val = 60;
+            if(val < 1) val = 1;
+            spinDuration = val;
+            durationInput.value = val;
+        });
+    }
+
+    // --- ЛОГІКА СПИСКУ ---
+    function renderItemsList() {
+        itemsList.innerHTML = '';
+        items.forEach((item, index) => {
+            const row = document.createElement('div');
+            row.className = 'flex items-center gap-2 bg-[#333] p-3 rounded border border-[#444]';
+            
+            const imgPreview = item.image 
+                ? `<div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-white" style="background-image: url('${item.image}')"></div>` 
+                : `<div class="w-10 h-10 rounded-full bg-[#444] flex items-center justify-center text-gray-400 font-bold text-xs">IMG</div>`;
+
+            row.innerHTML = `
+                <input type="color" value="${item.color}" onchange="updateItem(${index}, 'color', this.value)" class="w-8 h-10 rounded cursor-pointer border-none bg-transparent">
+                <div class="flex-1">
+                    <input type="text" value="${item.text}" oninput="updateItem(${index}, 'text', this.value)" class="w-full bg-transparent text-white font-bold text-lg focus:outline-none placeholder-gray-500" placeholder="Назва">
+                </div>
+                <label class="cursor-pointer hover:opacity-80 transition-opacity" title="Завантажити фото">
+                    <input type="file" accept="image/*" class="hidden" onchange="handleImageUpload(${index}, this)">
+                    ${imgPreview}
+                </label>
+                <input type="number" step="0.1" min="0.1" value="${item.weight}" onchange="updateItem(${index}, 'weight', this.value)" class="w-12 bg-[#222] text-center text-white rounded py-2 font-bold border border-[#444]" title="Шанс">
+                <button onclick="removeItem(${index})" class="text-gray-500 hover:text-red-500 px-2 text-2xl font-bold">&times;</button>
+            `;
+            itemsList.appendChild(row);
+        });
+    }
+
+    function addItem() {
+        const color = flatColors[items.length % flatColors.length];
+        items.push({ id: Date.now(), text: `Item ${items.length + 1}`, color: color, weight: 1, image: null, imgObj: null });
+        renderItemsList();
+        drawWheel();
+    }
+
+    function removeItem(index) {
+        if (items.length <= 1) return;
+        items.splice(index, 1);
+        renderItemsList();
+        drawWheel();
+    }
+
+    function updateItem(index, field, value) {
+        if (field === 'weight') value = parseFloat(value) || 1;
+        items[index][field] = value;
+        if(field !== 'image') drawWheel();
+    }
+
+    function handleImageUpload(index, input) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                items[index].image = e.target.result;
+                const img = new Image();
+                img.onload = () => {
+                    items[index].imgObj = img;
+                    drawWheel();
+                };
+                img.src = e.target.result;
+                renderItemsList();
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function getTotalWeight() {
+        return items.reduce((sum, item) => sum + item.weight, 0);
+    }
+
+    function drawWheel() {
+        if (!canvas.getContext) return;
+        
+        const width = canvas.width;
+        const height = canvas.height;
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const radius = width / 2 - 10;
+
+        ctx.clearRect(0, 0, width, height);
+        
+        const totalWeight = getTotalWeight();
+        let startAngle = 0;
+
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(currentRotation * Math.PI / 180);
+
+        items.forEach(item => {
+            const sliceAngle = (item.weight / totalWeight) * 2 * Math.PI;
+            const endAngle = startAngle + sliceAngle;
+
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.arc(0, 0, radius, startAngle, endAngle);
+            ctx.closePath();
+            ctx.fillStyle = item.color;
+            ctx.fill();
+            
+            ctx.strokeStyle = "#1e1e1e";
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            ctx.save();
+            const angleMid = startAngle + sliceAngle / 2;
+            ctx.rotate(angleMid);
+            
+            ctx.fillStyle = "#fff";
+            ctx.font = "900 24px Montserrat";
+            ctx.textAlign = "right";
+            ctx.textBaseline = "middle";
+            ctx.shadowColor = "rgba(0,0,0,0.5)";
+            ctx.shadowBlur = 4;
+
+            const contentRadius = radius - 20;
+
+            if (item.imgObj) {
+                const imgSize = 100;
+                const imgDist = contentRadius - 55; 
+
+                if (item.text.trim() !== "") {
+                     ctx.font = "bold 18px Montserrat";
+                     ctx.fillText(item.text, imgDist - 60, 0);
+                }
+
+                ctx.translate(imgDist, 0); 
+                ctx.rotate(Math.PI / 2);
+
+                ctx.beginPath();
+                ctx.arc(0, 0, imgSize / 2, 0, Math.PI * 2);
+                ctx.closePath();
+                ctx.save(); 
+                ctx.clip();
+                ctx.drawImage(item.imgObj, -imgSize/2, -imgSize/2, imgSize, imgSize);
+                ctx.restore(); 
+                
+                ctx.beginPath();
+                ctx.arc(0, 0, imgSize / 2, 0, Math.PI * 2);
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = "#fff";
+                ctx.stroke();
+            } else {
+                ctx.fillText(item.text, contentRadius - 20, 0);
+            }
+
+            ctx.restore();
+            startAngle += sliceAngle;
+        });
+
+        ctx.restore();
+    }
+
+    // --- ЛОГІКА АНІМАЦІЇ ---
+
+    function spinWheel() {
+        if (isSpinning) return;
+        if(items.length < 1) return;
+
+        isSpinning = true;
+        const btn = document.getElementById('main-spin-btn');
+        const configPanel = document.getElementById('config-panel');
+        
+        btn.disabled = true;
+        configPanel.classList.add('opacity-30', 'pointer-events-none');
+        
+        timerContainer.classList.remove('hidden');
+        countdownDisplay.classList.remove('pulse-anim');
+
+        // Більше обертів для швидкості
+        const minSpins = 10; 
+        const randomDegree = Math.floor(Math.random() * 360);
+        const totalDegrees = (minSpins * 360) + randomDegree;
+        
+        const startRotation = currentRotation;
+        const endRotation = startRotation + totalDegrees;
+        
+        const startTime = performance.now();
+        const durationSec = spinDuration;
+
+        let lastTickIndex = -1;
+
+        function animate(currentTime) {
+            const elapsed = (currentTime - startTime) / 1000;
+            const remaining = Math.max(0, durationSec - elapsed);
+
+            countdownDisplay.innerText = remaining.toFixed(2);
+            if (remaining < 3 && remaining > 0) countdownDisplay.classList.add('pulse-anim');
+            
+            if (elapsed < durationSec) {
+                // Нова крива: Power 5 (Quintic) для довшого фінішу
+                const t = elapsed / durationSec;
+                const ease = 1 - Math.pow(1 - t, 5);
+                
+                // Оновлюємо кут
+                const newRotation = startRotation + (endRotation - startRotation) * ease;
+                
+                // ЛОГІКА СТРІЛКИ (TICKER)
+                // Стрілка зверху (270deg). Обчислюємо, який сектор проходить повз 270.
+                // Оскільки колесо крутиться за годинниковою, кут під стрілкою зменшується відносно колеса? 
+                // Ні, просто беремо (270 - rotation).
+                
+                const totalWeight = getTotalWeight();
+                const normalizedRot = newRotation % 360;
+                // Кут колеса під стрілкою
+                let pointerAngle = (270 - normalizedRot) % 360; 
+                if (pointerAngle < 0) pointerAngle += 360;
+
+                // Знаходимо індекс поточного сектора під стрілкою
+                let currentAngleSum = 0;
+                let currentTickIndex = -1;
+                
+                // Спрощений підхід для тикання: просто перевіряємо перетин меж
+                // Загальна кількість "кроків" (меж) на колесі
+                // Але сектори можуть бути різної ваги.
+                // Найточніше: дивитися, чи змінився winningItem порівняно з попереднім кадром
+                
+                // Проходимо по секторах, щоб знайти поточний
+                for(let i=0; i<items.length; i++) {
+                    const sliceAngleDeg = (items[i].weight / totalWeight) * 360;
+                    if (pointerAngle >= currentAngleSum && pointerAngle < currentAngleSum + sliceAngleDeg) {
+                        currentTickIndex = i;
+                        break;
+                    }
+                    currentAngleSum += sliceAngleDeg;
+                }
+
+                // Якщо індекс змінився - клацаємо стрілкою
+                if (currentTickIndex !== lastTickIndex && lastTickIndex !== -1) {
+                    // Trigger tick animation
+                    pointerBody.style.transform = "rotate(-25deg)";
+                    setTimeout(() => {
+                         pointerBody.style.transform = "rotate(0deg)";
+                    }, 100);
+                }
+                lastTickIndex = currentTickIndex;
+
+                currentRotation = newRotation;
+                drawWheel();
+                requestAnimationFrame(animate);
+            } else {
+                currentRotation = endRotation % 360;
+                drawWheel();
+                isSpinning = false;
+                
+                btn.disabled = false;
+                configPanel.classList.remove('opacity-30', 'pointer-events-none');
+                timerContainer.classList.add('hidden');
+                
+                determineWinner(currentRotation);
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+
+    function determineWinner(finalRotation) {
+        const normalizedRotation = finalRotation % 360;
+        let pointerAngle = (270 - normalizedRotation) % 360; 
+        if (pointerAngle < 0) pointerAngle += 360;
+        
+        const pointerRad = pointerAngle * (Math.PI / 180);
+        let currentAngleRad = 0;
+        const totalWeight = getTotalWeight();
+        
+        let winningItem = null;
+
+        for (let item of items) {
+            const sliceAngle = (item.weight / totalWeight) * 2 * Math.PI;
+            if (pointerRad >= currentAngleRad && pointerRad < currentAngleRad + sliceAngle) {
+                winningItem = item;
+                break;
+            }
+            currentAngleRad += sliceAngle;
+        }
+
+        if (winningItem) {
+            showResult(winningItem);
+        }
+    }
+
+    function showResult(item) {
+        winnerText.innerText = item.text || "";
+        if (item.image) {
+            winnerImgContainer.style.backgroundImage = `url('${item.image}')`;
+            winnerImgContainer.classList.remove('hidden');
+        } else {
+            winnerImgContainer.classList.add('hidden');
+        }
+        resultModal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+        resultModal.classList.add('hidden');
+    }
+
+    init();
+</script>
+</body>
+</html>
