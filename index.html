@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Яскрава Рулетка</title>
+    <title>Командна Рулетка</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@700&display=swap" rel="stylesheet">
     <style>
@@ -66,6 +66,10 @@
             from { transform: scale(1); text-shadow: 0 0 10px red; color: #fff; }
             to { transform: scale(1.1); text-shadow: 0 0 20px red; color: #fca5a5; }
         }
+        
+        .img-loaded-indicator {
+            border-color: #4CD964 !important;
+        }
 
         input[type="range"] {
             accent-color: #2563eb;
@@ -92,16 +96,57 @@
             </h2>
 
             <div class="space-y-6">
-                <!-- Час -->
+                <!-- ПРЕСЕТИ -->
                 <div>
-                    <label class="text-sm text-gray-400 uppercase font-bold tracking-wider mb-2 block">
-                        Час обертання (до 60 сек)
+                     <label class="text-sm text-gray-400 uppercase font-bold tracking-wider mb-2 block">
+                        Швидкий вибір (Пресети)
                     </label>
-                    <div class="flex items-center gap-4">
-                        <input type="range" id="spin-duration" min="1" max="60" value="10" class="flex-1 h-3 bg-gray-700 rounded-lg appearance-none cursor-pointer">
-                        <input type="number" id="duration-number" value="10" min="1" max="60" class="w-16 bg-gray-800 border border-gray-600 text-white text-center rounded p-1 font-bold">
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="loadPreset('designers')" class="bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-lg font-bold text-xs md:text-sm uppercase tracking-wider transition-colors shadow-md border-b-4 border-purple-800 active:border-b-0 active:translate-y-1">
+                            Дизайнери
+                        </button>
+                        <button onclick="loadPreset('producers')" class="bg-pink-600 hover:bg-pink-500 text-white py-3 rounded-lg font-bold text-xs md:text-sm uppercase tracking-wider transition-colors shadow-md border-b-4 border-pink-800 active:border-b-0 active:translate-y-1">
+                            Продюсери
+                        </button>
+                         <button onclick="loadPreset('tasks')" class="bg-teal-600 hover:bg-teal-500 text-white py-3 rounded-lg font-bold text-xs md:text-sm uppercase tracking-wider transition-colors shadow-md border-b-4 border-teal-800 active:border-b-0 active:translate-y-1">
+                            Таски
+                        </button>
+                        <!-- Нові кнопки -->
+                        <button onclick="loadPreset('template')" class="bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-lg font-bold text-xs md:text-sm uppercase tracking-wider transition-colors shadow-md border-b-4 border-indigo-800 active:border-b-0 active:translate-y-1">
+                            Темплейт
+                        </button>
+                        <button onclick="loadPreset('influencer')" class="bg-orange-600 hover:bg-orange-500 text-white py-3 rounded-lg font-bold text-xs md:text-sm uppercase tracking-wider transition-colors shadow-md border-b-4 border-orange-800 active:border-b-0 active:translate-y-1">
+                            Інфлюенсер
+                        </button>
                     </div>
                 </div>
+
+                <div class="h-[1px] bg-gray-700 w-full"></div>
+
+                <!-- Час та Повтори -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-sm text-gray-400 uppercase font-bold tracking-wider mb-2 block">
+                            Час (сек)
+                        </label>
+                        <div class="flex items-center gap-2">
+                            <input type="number" id="duration-number" value="10" min="1" max="60" class="w-full bg-gray-800 border border-gray-600 text-white text-center rounded p-2 font-bold">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-sm text-gray-400 uppercase font-bold tracking-wider mb-2 block">
+                            Повтори
+                        </label>
+                        <select id="sector-multiplier" onchange="drawWheel()" class="w-full bg-gray-800 border border-gray-600 text-white rounded p-2 font-bold cursor-pointer">
+                            <option value="1">x1 (Стандарт)</option>
+                            <option value="2">x2 (Подвоїти)</option>
+                            <option value="3" selected>x3 (Потроїти)</option>
+                            <option value="4">x4 (Максимум)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <input type="range" id="spin-duration" min="1" max="60" value="10" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer hidden">
 
                 <!-- Список -->
                 <div>
@@ -112,7 +157,7 @@
                         </button>
                     </div>
                     
-                    <div id="items-list" class="space-y-2 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
+                    <div id="items-list" class="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
                     </div>
                 </div>
             </div>
@@ -126,9 +171,8 @@
         <div class="lg:col-span-8 flex flex-col items-center justify-center relative w-full h-full min-h-[500px]">
             
             <div class="relative w-[350px] h-[350px] sm:w-[500px] sm:h-[500px] md:w-[600px] md:h-[600px]">
-                <!-- Контейнер стрілки (Центрування) -->
+                <!-- Контейнер стрілки -->
                 <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 z-20">
-                    <!-- Сама стрілка (Анімація повороту) -->
                     <div id="pointer-body" class="pointer-sharp w-0 h-0 border-l-[25px] border-l-transparent border-r-[25px] border-r-transparent border-t-[50px] border-t-red-600 drop-shadow-lg origin-[50%_0%]"></div>
                 </div>
 
@@ -164,17 +208,48 @@
     </div>
 
 <script>
-    // --- КОЛЬОРИ ---
     const flatColors = [
         '#FF3B30', '#FF9500', '#FFCC00', '#4CD964', 
         '#5AC8FA', '#007AFF', '#5856D6', '#FF2D55'
     ];
 
-    let items = [
-        { id: 1, text: "Піца", color: "#FF3B30", weight: 1, image: null, imgObj: null },
-        { id: 2, text: "Суші", color: "#007AFF", weight: 1, image: null, imgObj: null },
-        { id: 3, text: "Кава", color: "#FFCC00", weight: 1, image: null, imgObj: null },
-    ];
+    // --- НАЛАШТУВАННЯ ПРЕСЕТІВ ---
+    // Тут ти можеш редагувати списки вручну
+    
+    const presets = {
+        designers: [
+            { name: 'Богдан', img: '' },
+            { name: 'Ніна', img: '' }, 
+            { name: 'Аня', img: '' }, 
+            { name: 'Діма', img: '' }, 
+            { name: 'Яся', img: '' }, 
+            { name: 'Іра', img: '' }, 
+            { name: 'Настя', img: '' }
+        ],
+        producers: [
+            'Іванка', 'Оля', 'Лена', 'Марія', 'Божена'
+        ],
+        tasks: [
+            { name: 'Meta', img: '' },
+            { name: 'TikTok', img: '' },
+            { name: 'Google', img: '' },
+            { name: 'ASO', img: '' }
+        ],
+        // ЗАПОВНИ ЦЕЙ РОЗДІЛ:
+        template: [
+            { name: 'Шаблон 1', img: '' },
+            { name: 'Шаблон 2', img: '' },
+            { name: 'Шаблон 3', img: '' }
+        ],
+        // ЗАПОВНИ ЦЕЙ РОЗДІЛ:
+        influencer: [
+            { name: 'Блогер A', img: '' },
+            { name: 'Блогер B', img: '' },
+            { name: 'Блогер C', img: '' }
+        ]
+    };
+
+    let items = [];
 
     let spinDuration = 10;
     let isSpinning = false;
@@ -186,6 +261,7 @@
     const ctx = canvas.getContext('2d');
     const durationInput = document.getElementById('spin-duration');
     const durationNumber = document.getElementById('duration-number');
+    const multiplierInput = document.getElementById('sector-multiplier');
     const resultModal = document.getElementById('result-modal');
     const winnerText = document.getElementById('winner-text');
     const winnerImgContainer = document.getElementById('winner-img-container');
@@ -194,14 +270,8 @@
     const pointerBody = document.getElementById('pointer-body');
 
     function init() {
-        renderItemsList();
-        drawWheel();
+        loadPreset('designers');
         
-        durationInput.addEventListener('input', (e) => {
-            const val = parseInt(e.target.value);
-            spinDuration = val;
-            durationNumber.value = val;
-        });
         durationNumber.addEventListener('input', (e) => {
             let val = parseInt(e.target.value);
             if(val > 60) val = 60;
@@ -211,6 +281,42 @@
         });
     }
 
+    function loadPreset(type) {
+        if (!presets[type]) return;
+        
+        items = presets[type].map((entry, index) => {
+            let text = typeof entry === 'string' ? entry : entry.name;
+            let imgPath = (typeof entry === 'object' && entry.img) ? entry.img : null;
+
+            let newItem = {
+                id: Date.now() + index,
+                text: text,
+                color: flatColors[index % flatColors.length], 
+                weight: 1,
+                image: imgPath,
+                imgObj: null
+            };
+
+            if (imgPath) {
+                const img = new Image();
+                img.onload = () => {
+                    newItem.imgObj = img;
+                    drawWheel();
+                    renderItemsList();
+                };
+                img.onerror = () => {
+                    console.log("Не вдалося завантажити: " + imgPath);
+                }
+                img.src = imgPath;
+            }
+
+            return newItem;
+        });
+        
+        renderItemsList();
+        drawWheel();
+    }
+
     // --- ЛОГІКА СПИСКУ ---
     function renderItemsList() {
         itemsList.innerHTML = '';
@@ -218,16 +324,21 @@
             const row = document.createElement('div');
             row.className = 'flex items-center gap-2 bg-[#333] p-3 rounded border border-[#444]';
             
-            const imgPreview = item.image 
-                ? `<div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-white" style="background-image: url('${item.image}')"></div>` 
-                : `<div class="w-10 h-10 rounded-full bg-[#444] flex items-center justify-center text-gray-400 font-bold text-xs">IMG</div>`;
+            let imgPreview = `<div class="w-10 h-10 rounded-full bg-[#444] flex items-center justify-center text-gray-400 font-bold text-xs">IMG</div>`;
+            
+            if (item.imgObj) {
+                imgPreview = `<div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-[#4CD964]" style="background-image: url('${item.image}')"></div>`;
+            } 
+            else if (item.image && item.image.startsWith('data:')) {
+                 imgPreview = `<div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-white" style="background-image: url('${item.image}')"></div>`;
+            }
 
             row.innerHTML = `
                 <input type="color" value="${item.color}" onchange="updateItem(${index}, 'color', this.value)" class="w-8 h-10 rounded cursor-pointer border-none bg-transparent">
                 <div class="flex-1">
                     <input type="text" value="${item.text}" oninput="updateItem(${index}, 'text', this.value)" class="w-full bg-transparent text-white font-bold text-lg focus:outline-none placeholder-gray-500" placeholder="Назва">
                 </div>
-                <label class="cursor-pointer hover:opacity-80 transition-opacity" title="Завантажити фото">
+                <label class="cursor-pointer hover:opacity-80 transition-opacity" title="Завантажити фото локально">
                     <input type="file" accept="image/*" class="hidden" onchange="handleImageUpload(${index}, this)">
                     ${imgPreview}
                 </label>
@@ -240,7 +351,7 @@
 
     function addItem() {
         const color = flatColors[items.length % flatColors.length];
-        items.push({ id: Date.now(), text: `Item ${items.length + 1}`, color: color, weight: 1, image: null, imgObj: null });
+        items.push({ id: Date.now(), text: `Новий ${items.length + 1}`, color: color, weight: 1, image: null, imgObj: null });
         renderItemsList();
         drawWheel();
     }
@@ -276,7 +387,9 @@
         }
     }
 
-    function getTotalWeight() {
+    // --- ДОПОМІЖНІ ФУНКЦІЇ ДЛЯ МУЛЬТИПЛІКАТОРА ---
+    
+    function getTotalWeightSingleSet() {
         return items.reduce((sum, item) => sum + item.weight, 0);
     }
 
@@ -291,73 +404,81 @@
 
         ctx.clearRect(0, 0, width, height);
         
-        const totalWeight = getTotalWeight();
+        const multiplier = parseInt(multiplierInput.value) || 1;
+        const totalWeightOneSet = getTotalWeightSingleSet();
+        const totalWeightAll = totalWeightOneSet * multiplier;
+        
+        if (totalWeightAll === 0) return;
+
         let startAngle = 0;
 
         ctx.save();
         ctx.translate(centerX, centerY);
         ctx.rotate(currentRotation * Math.PI / 180);
 
-        items.forEach(item => {
-            const sliceAngle = (item.weight / totalWeight) * 2 * Math.PI;
-            const endAngle = startAngle + sliceAngle;
+        for (let m = 0; m < multiplier; m++) {
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                const sliceAngle = (item.weight / totalWeightAll) * 2 * Math.PI;
+                const endAngle = startAngle + sliceAngle;
 
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.arc(0, 0, radius, startAngle, endAngle);
-            ctx.closePath();
-            ctx.fillStyle = item.color;
-            ctx.fill();
-            
-            ctx.strokeStyle = "#1e1e1e";
-            ctx.lineWidth = 4;
-            ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.arc(0, 0, radius, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fillStyle = item.color;
+                ctx.fill();
+                
+                ctx.strokeStyle = "#1e1e1e";
+                ctx.lineWidth = 4;
+                ctx.stroke();
 
-            ctx.save();
-            const angleMid = startAngle + sliceAngle / 2;
-            ctx.rotate(angleMid);
-            
-            ctx.fillStyle = "#fff";
-            ctx.font = "900 24px Montserrat";
-            ctx.textAlign = "right";
-            ctx.textBaseline = "middle";
-            ctx.shadowColor = "rgba(0,0,0,0.5)";
-            ctx.shadowBlur = 4;
+                ctx.save();
+                const angleMid = startAngle + sliceAngle / 2;
+                ctx.rotate(angleMid);
+                
+                ctx.fillStyle = "#fff";
+                ctx.font = multiplier > 2 ? "900 16px Montserrat" : "900 24px Montserrat";
+                ctx.textAlign = "right";
+                ctx.textBaseline = "middle";
+                ctx.shadowColor = "rgba(0,0,0,0.5)";
+                ctx.shadowBlur = 4;
 
-            const contentRadius = radius - 20;
+                const contentRadius = radius - 20;
 
-            if (item.imgObj) {
-                const imgSize = 100;
-                const imgDist = contentRadius - 55; 
+                if (item.imgObj) {
+                    const imgSize = multiplier > 2 ? 60 : 100;
+                    const imgDist = contentRadius - (multiplier > 2 ? 40 : 55); 
 
-                if (item.text.trim() !== "") {
-                     ctx.font = "bold 18px Montserrat";
-                     ctx.fillText(item.text, imgDist - 60, 0);
+                    if (item.text.trim() !== "") {
+                        ctx.font = multiplier > 2 ? "bold 14px Montserrat" : "bold 18px Montserrat";
+                        ctx.fillText(item.text, imgDist - (multiplier > 2 ? 40 : 60), 0);
+                    }
+
+                    ctx.translate(imgDist, 0); 
+                    ctx.rotate(Math.PI / 2);
+
+                    ctx.beginPath();
+                    ctx.arc(0, 0, imgSize / 2, 0, Math.PI * 2);
+                    ctx.closePath();
+                    ctx.save(); 
+                    ctx.clip();
+                    ctx.drawImage(item.imgObj, -imgSize/2, -imgSize/2, imgSize, imgSize);
+                    ctx.restore(); 
+                    
+                    ctx.beginPath();
+                    ctx.arc(0, 0, imgSize / 2, 0, Math.PI * 2);
+                    ctx.lineWidth = 4;
+                    ctx.strokeStyle = "#fff";
+                    ctx.stroke();
+                } else {
+                    ctx.fillText(item.text, contentRadius - 20, 0);
                 }
 
-                ctx.translate(imgDist, 0); 
-                ctx.rotate(Math.PI / 2);
-
-                ctx.beginPath();
-                ctx.arc(0, 0, imgSize / 2, 0, Math.PI * 2);
-                ctx.closePath();
-                ctx.save(); 
-                ctx.clip();
-                ctx.drawImage(item.imgObj, -imgSize/2, -imgSize/2, imgSize, imgSize);
-                ctx.restore(); 
-                
-                ctx.beginPath();
-                ctx.arc(0, 0, imgSize / 2, 0, Math.PI * 2);
-                ctx.lineWidth = 4;
-                ctx.strokeStyle = "#fff";
-                ctx.stroke();
-            } else {
-                ctx.fillText(item.text, contentRadius - 20, 0);
+                ctx.restore();
+                startAngle += sliceAngle;
             }
-
-            ctx.restore();
-            startAngle += sliceAngle;
-        });
+        }
 
         ctx.restore();
     }
@@ -378,7 +499,6 @@
         timerContainer.classList.remove('hidden');
         countdownDisplay.classList.remove('pulse-anim');
 
-        // Більше обертів для швидкості
         const minSpins = 10; 
         const randomDegree = Math.floor(Math.random() * 360);
         const totalDegrees = (minSpins * 360) + randomDegree;
@@ -399,52 +519,43 @@
             if (remaining < 3 && remaining > 0) countdownDisplay.classList.add('pulse-anim');
             
             if (elapsed < durationSec) {
-                // Нова крива: Power 5 (Quintic) для довшого фінішу
                 const t = elapsed / durationSec;
                 const ease = 1 - Math.pow(1 - t, 5);
                 
-                // Оновлюємо кут
                 const newRotation = startRotation + (endRotation - startRotation) * ease;
                 
-                // ЛОГІКА СТРІЛКИ (TICKER)
-                // Стрілка зверху (270deg). Обчислюємо, який сектор проходить повз 270.
-                // Оскільки колесо крутиться за годинниковою, кут під стрілкою зменшується відносно колеса? 
-                // Ні, просто беремо (270 - rotation).
-                
-                const totalWeight = getTotalWeight();
+                // --- ЛОГІКА ТІКЕРА ---
+                const multiplier = parseInt(multiplierInput.value) || 1;
+                const totalWeightOneSet = getTotalWeightSingleSet();
+                const totalWeightAll = totalWeightOneSet * multiplier;
+
                 const normalizedRot = newRotation % 360;
-                // Кут колеса під стрілкою
                 let pointerAngle = (270 - normalizedRot) % 360; 
                 if (pointerAngle < 0) pointerAngle += 360;
 
-                // Знаходимо індекс поточного сектора під стрілкою
                 let currentAngleSum = 0;
-                let currentTickIndex = -1;
+                let currentTickGlobalIndex = -1;
                 
-                // Спрощений підхід для тикання: просто перевіряємо перетин меж
-                // Загальна кількість "кроків" (меж) на колесі
-                // Але сектори можуть бути різної ваги.
-                // Найточніше: дивитися, чи змінився winningItem порівняно з попереднім кадром
-                
-                // Проходимо по секторах, щоб знайти поточний
-                for(let i=0; i<items.length; i++) {
-                    const sliceAngleDeg = (items[i].weight / totalWeight) * 360;
-                    if (pointerAngle >= currentAngleSum && pointerAngle < currentAngleSum + sliceAngleDeg) {
-                        currentTickIndex = i;
-                        break;
+                for (let m = 0; m < multiplier; m++) {
+                    for(let i=0; i<items.length; i++) {
+                        const sliceAngleDeg = (items[i].weight / totalWeightAll) * 360;
+                        if (pointerAngle >= currentAngleSum && pointerAngle < currentAngleSum + sliceAngleDeg) {
+                            currentTickGlobalIndex = (m * items.length) + i;
+                            break;
+                        }
+                        currentAngleSum += sliceAngleDeg;
                     }
-                    currentAngleSum += sliceAngleDeg;
+                    if (currentTickGlobalIndex !== -1) break;
                 }
 
-                // Якщо індекс змінився - клацаємо стрілкою
-                if (currentTickIndex !== lastTickIndex && lastTickIndex !== -1) {
-                    // Trigger tick animation
+                if (currentTickGlobalIndex !== lastTickIndex && lastTickIndex !== -1) {
                     pointerBody.style.transform = "rotate(-25deg)";
                     setTimeout(() => {
                          pointerBody.style.transform = "rotate(0deg)";
                     }, 100);
                 }
-                lastTickIndex = currentTickIndex;
+                lastTickIndex = currentTickGlobalIndex;
+                // ---------------------
 
                 currentRotation = newRotation;
                 drawWheel();
@@ -465,23 +576,31 @@
     }
 
     function determineWinner(finalRotation) {
+        const multiplier = parseInt(multiplierInput.value) || 1;
+        const totalWeightOneSet = getTotalWeightSingleSet();
+        const totalWeightAll = totalWeightOneSet * multiplier;
+
         const normalizedRotation = finalRotation % 360;
         let pointerAngle = (270 - normalizedRotation) % 360; 
         if (pointerAngle < 0) pointerAngle += 360;
         
         const pointerRad = pointerAngle * (Math.PI / 180);
         let currentAngleRad = 0;
-        const totalWeight = getTotalWeight();
         
         let winningItem = null;
 
-        for (let item of items) {
-            const sliceAngle = (item.weight / totalWeight) * 2 * Math.PI;
-            if (pointerRad >= currentAngleRad && pointerRad < currentAngleRad + sliceAngle) {
-                winningItem = item;
-                break;
+        for (let m = 0; m < multiplier; m++) {
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                const sliceAngle = (item.weight / totalWeightAll) * 2 * Math.PI;
+                
+                if (pointerRad >= currentAngleRad && pointerRad < currentAngleRad + sliceAngle) {
+                    winningItem = item;
+                    break;
+                }
+                currentAngleRad += sliceAngle;
             }
-            currentAngleRad += sliceAngle;
+            if (winningItem) break;
         }
 
         if (winningItem) {
@@ -491,8 +610,16 @@
 
     function showResult(item) {
         winnerText.innerText = item.text || "";
-        if (item.image) {
-            winnerImgContainer.style.backgroundImage = `url('${item.image}')`;
+        
+        let bgImage = null;
+        if (item.imgObj) {
+            bgImage = item.imgObj.src;
+        } else if (item.image) {
+            bgImage = item.image;
+        }
+
+        if (bgImage) {
+            winnerImgContainer.style.backgroundImage = `url('${bgImage}')`;
             winnerImgContainer.classList.remove('hidden');
         } else {
             winnerImgContainer.classList.add('hidden');
