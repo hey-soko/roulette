@@ -3,22 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎰 Командна Рулетка</title>
+    <title>🎰 Royal Roulette - Командна Рулетка</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Cinzel:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
         }
         
         body {
-            font-family: 'Montserrat', sans-serif;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            font-family: 'Playfair Display', serif;
+            background: 
+                radial-gradient(ellipse at top, #1a0a0a 0%, #0d0505 50%, #000 100%);
             color: #fff;
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
         }
         
+        /* Velvet texture overlay */
         body::before {
             content: '';
             position: fixed;
@@ -26,131 +29,184 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: 
-                radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.3), transparent),
-                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.2), transparent),
-                radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.3), transparent),
-                radial-gradient(2px 2px at 130px 80px, rgba(255,255,255,0.2), transparent),
-                radial-gradient(1px 1px at 160px 120px, rgba(255,255,255,0.4), transparent);
-            background-size: 200px 200px;
-            animation: twinkle 4s ease-in-out infinite alternate;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
             pointer-events: none;
             z-index: 0;
         }
         
-        @keyframes twinkle {
-            from { opacity: 0.3; }
-            to { opacity: 0.7; }
-        }
-
-        .glass-panel {
-            background: rgba(30, 30, 50, 0.8);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 
-                0 25px 50px rgba(0, 0, 0, 0.5),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-        }
-
-        .neon-glow {
-            box-shadow: 
-                0 0 20px rgba(99, 102, 241, 0.5),
-                0 0 40px rgba(99, 102, 241, 0.3),
-                0 0 60px rgba(99, 102, 241, 0.1);
-        }
-
-        .flat-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 
-                0 8px 0 #4c3d91,
-                0 15px 30px rgba(102, 126, 234, 0.4);
-            position: relative;
-            overflow: hidden;
+        /* Gold sparkles */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(2px 2px at 100px 50px, #ffd700, transparent),
+                radial-gradient(2px 2px at 200px 150px, #ffd700, transparent),
+                radial-gradient(1px 1px at 300px 250px, #fff, transparent),
+                radial-gradient(2px 2px at 400px 100px, #ffd700, transparent),
+                radial-gradient(1px 1px at 500px 300px, #ffd700, transparent),
+                radial-gradient(2px 2px at 50px 400px, #fff, transparent),
+                radial-gradient(1px 1px at 150px 350px, #ffd700, transparent),
+                radial-gradient(2px 2px at 250px 450px, #ffd700, transparent);
+            background-size: 550px 500px;
+            animation: sparkle 8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
         }
         
-        .flat-btn::before {
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Casino panel */
+        .casino-panel {
+            background: linear-gradient(180deg, #1a0a0a 0%, #0d0505 100%);
+            border: 3px solid;
+            border-image: linear-gradient(180deg, #ffd700 0%, #b8860b 50%, #ffd700 100%) 1;
+            box-shadow: 
+                0 0 30px rgba(255, 215, 0, 0.2),
+                inset 0 0 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        
+        .casino-panel::before {
+            content: '♠ ♥ ♣ ♦';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0d0505;
+            padding: 0 15px;
+            color: #ffd700;
+            font-size: 14px;
+            letter-spacing: 8px;
+        }
+
+        /* Gold text */
+        .gold-text {
+            background: linear-gradient(180deg, #ffd700 0%, #ffec8b 25%, #ffd700 50%, #b8860b 75%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+        
+        .gold-border {
+            border: 2px solid transparent;
+            background: linear-gradient(#1a0a0a, #1a0a0a) padding-box,
+                        linear-gradient(180deg, #ffd700, #b8860b, #ffd700) border-box;
+        }
+
+        /* Spin button */
+        .spin-btn {
+            background: linear-gradient(180deg, #ffd700 0%, #b8860b 50%, #8b6914 100%);
+            border: 3px solid #ffd700;
+            color: #1a0a0a;
+            font-family: 'Cinzel', serif;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 6px 0 #5c4a0a,
+                0 10px 30px rgba(255, 215, 0, 0.4),
+                inset 0 2px 0 rgba(255, 255, 255, 0.3);
+        }
+        
+        .spin-btn::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shine 3s infinite;
         }
         
-        .flat-btn:hover::before {
-            left: 100%;
+        @keyframes shine {
+            0% { left: -100%; }
+            50%, 100% { left: 100%; }
         }
         
-        .flat-btn:hover {
-            transform: translateY(-2px);
+        .spin-btn:hover {
+            transform: translateY(-3px);
             box-shadow: 
-                0 10px 0 #4c3d91,
-                0 20px 40px rgba(102, 126, 234, 0.5);
+                0 9px 0 #5c4a0a,
+                0 15px 40px rgba(255, 215, 0, 0.5),
+                inset 0 2px 0 rgba(255, 255, 255, 0.3);
         }
         
-        .flat-btn:active {
-            transform: translateY(8px);
-            box-shadow: 0 0 0 #4c3d91;
+        .spin-btn:active {
+            transform: translateY(6px);
+            box-shadow: 
+                0 0 0 #5c4a0a,
+                0 5px 20px rgba(255, 215, 0, 0.3);
         }
         
-        .flat-btn:disabled {
-            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+        .spin-btn:disabled {
+            background: linear-gradient(180deg, #4a4a4a 0%, #2a2a2a 100%);
+            border-color: #4a4a4a;
+            color: #666;
             box-shadow: none;
-            transform: translateY(8px);
+            transform: translateY(6px);
         }
 
+        /* Preset buttons */
         .preset-btn {
+            background: linear-gradient(180deg, #8b0000 0%, #5c0000 100%);
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            font-family: 'Cinzel', serif;
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
-            transition: all 0.3s ease;
+        }
+        
+        .preset-btn:hover {
+            background: linear-gradient(180deg, #a50000 0%, #7c0000 100%);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            transform: scale(1.05);
         }
         
         .preset-btn::after {
             content: '';
             position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.4s, height 0.4s;
-        }
-        
-        .preset-btn:hover::after {
-            width: 200%;
-            height: 200%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
         }
 
+        /* Custom scrollbar */
         .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
+            width: 8px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.05);
-            border-radius: 3px;
+            background: #1a0a0a;
+            border: 1px solid #333;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #667eea, #764ba2);
-            border-radius: 3px;
+            background: linear-gradient(180deg, #ffd700, #b8860b);
+            border-radius: 4px;
         }
 
-        .pointer-sharp {
-            filter: drop-shadow(0 8px 15px rgba(239, 68, 68, 0.6));
-            z-index: 20;
-            transform-origin: top center;
-            transition: transform 0.08s ease-out;
-        }
-        
-        .tense-timer {
+        /* Timer */
+        .casino-timer {
             font-family: 'Orbitron', sans-serif;
+            color: #ff0000;
             text-shadow: 
-                0 0 20px rgba(239, 68, 68, 0.8),
-                0 0 40px rgba(239, 68, 68, 0.5);
+                0 0 10px #ff0000,
+                0 0 20px #ff0000,
+                0 0 40px #ff0000;
         }
         
         .pulse-anim {
@@ -158,87 +214,80 @@
         }
         
         @keyframes pulse-red {
-            from { 
-                transform: scale(1); 
-                text-shadow: 0 0 20px rgba(239, 68, 68, 0.8); 
-                color: #fff; 
-            }
-            to { 
-                transform: scale(1.15); 
-                text-shadow: 0 0 40px rgba(239, 68, 68, 1), 0 0 60px rgba(239, 68, 68, 0.8); 
-                color: #fca5a5; 
-            }
+            from { transform: scale(1); opacity: 1; }
+            to { transform: scale(1.1); opacity: 0.8; }
         }
 
-        .wheel-container {
+        /* Wheel container */
+        .wheel-frame {
             position: relative;
-        }
-        
-        .wheel-glow {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 110%;
-            height: 110%;
+            padding: 20px;
+            background: linear-gradient(135deg, #2a1810 0%, #1a0a0a 50%, #2a1810 100%);
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(102, 126, 234, 0.3) 0%, transparent 70%);
-            filter: blur(30px);
-            pointer-events: none;
-            opacity: 0.5;
-            transition: opacity 0.3s;
-        }
-        
-        .wheel-container:hover .wheel-glow,
-        .spinning .wheel-glow {
-            opacity: 1;
-        }
-
-        .wheel-ring {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: calc(100% + 20px);
-            height: calc(100% + 20px);
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
-            z-index: -1;
-            animation: ring-rotate 10s linear infinite;
-        }
-        
-        @keyframes ring-rotate {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(360deg); }
-        }
-        
-        .spinning .wheel-ring {
-            animation: ring-rotate 2s linear infinite;
-        }
-
-        .center-hub {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
             box-shadow: 
-                0 0 30px rgba(0,0,0,0.5),
-                inset 0 2px 10px rgba(255,255,255,0.1);
+                0 0 0 8px #ffd700,
+                0 0 0 12px #b8860b,
+                0 0 0 20px #1a0a0a,
+                0 0 60px rgba(255, 215, 0, 0.3),
+                inset 0 0 100px rgba(0,0,0,0.5);
+        }
+        
+        .wheel-frame::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #ffd700, #b8860b, #ffd700, #b8860b, #ffd700, #b8860b, #ffd700, #b8860b, #ffd700);
+            z-index: -1;
+            animation: rotate-border 20s linear infinite;
+        }
+        
+        @keyframes rotate-border {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .spinning .wheel-frame::before {
+            animation: rotate-border 2s linear infinite;
+        }
+
+        /* Pointer */
+        .casino-pointer {
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.8));
+            z-index: 30;
+            transform-origin: bottom center;
+            transition: transform 0.08s ease-out;
+        }
+
+        /* Center hub */
+        .center-hub {
+            background: radial-gradient(circle at 30% 30%, #ffd700 0%, #b8860b 50%, #8b6914 100%);
+            box-shadow: 
+                0 0 30px rgba(255, 215, 0, 0.5),
+                inset 0 -5px 20px rgba(0,0,0,0.5),
+                inset 0 5px 10px rgba(255,255,255,0.3);
+            border: 4px solid #ffd700;
         }
         
         .center-hub-inner {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 
-                0 5px 20px rgba(102, 126, 234, 0.5),
-                inset 0 2px 5px rgba(255,255,255,0.3);
+            background: linear-gradient(180deg, #8b0000 0%, #5c0000 100%);
+            border: 3px solid #ffd700;
+            box-shadow: inset 0 2px 10px rgba(255,255,255,0.2);
         }
 
+        /* Item row */
         .item-row {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(139, 0, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.2);
             transition: all 0.2s ease;
         }
         
         .item-row:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(102, 126, 234, 0.3);
+            background: rgba(139, 0, 0, 0.4);
+            border-color: rgba(255, 215, 0, 0.5);
             transform: translateX(5px);
         }
         
@@ -247,71 +296,66 @@
             transform: scale(1.02);
         }
 
-        input[type="range"] {
-            accent-color: #667eea;
+        /* Inputs */
+        .casino-input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+            font-family: 'Playfair Display', serif;
         }
         
-        input[type="color"] {
-            -webkit-appearance: none;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
+        .casino-input:focus {
+            border-color: #ffd700;
+            outline: none;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
         }
         
-        input[type="color"]::-webkit-color-swatch-wrapper {
-            padding: 0;
-        }
-        
-        input[type="color"]::-webkit-color-swatch {
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 50%;
+        .casino-select {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            color: #ffd700;
         }
 
-        /* Модальне вікно */
+        /* Modal */
         .modal-backdrop {
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.95);
         }
         
         .modal-content {
-            background: linear-gradient(135deg, rgba(30, 30, 50, 0.95) 0%, rgba(20, 20, 40, 0.95) 100%);
-            border: 2px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(180deg, #1a0a0a 0%, #0d0505 100%);
+            border: 4px solid;
+            border-image: linear-gradient(180deg, #ffd700, #b8860b, #ffd700) 1;
             box-shadow: 
-                0 50px 100px rgba(0, 0, 0, 0.5),
-                0 0 100px rgba(102, 126, 234, 0.3);
+                0 0 100px rgba(255, 215, 0, 0.3),
+                inset 0 0 60px rgba(0, 0, 0, 0.5);
         }
         
-        .winner-glow {
-            animation: winner-pulse 1s ease-in-out infinite alternate;
+        .winner-text {
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(180deg, #ffd700 0%, #ffec8b 25%, #ffd700 50%, #b8860b 75%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: winner-glow 1s ease-in-out infinite alternate;
         }
         
-        @keyframes winner-pulse {
-            from {
-                text-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
-                transform: scale(1);
-            }
-            to {
-                text-shadow: 0 0 40px rgba(251, 191, 36, 0.8), 0 0 60px rgba(251, 191, 36, 0.5);
-                transform: scale(1.05);
-            }
+        @keyframes winner-glow {
+            from { filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5)); }
+            to { filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8)); }
         }
         
         .winner-img {
+            border: 4px solid #ffd700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
             animation: winner-img-pulse 2s ease-in-out infinite;
         }
         
         @keyframes winner-img-pulse {
-            0%, 100% {
-                box-shadow: 0 0 30px rgba(251, 191, 36, 0.5);
-                transform: scale(1);
-            }
-            50% {
-                box-shadow: 0 0 50px rgba(251, 191, 36, 0.8);
-                transform: scale(1.05);
-            }
+            0%, 100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 60px rgba(255, 215, 0, 0.8); }
         }
 
-        /* Конфеті */
+        /* Confetti */
         .confetti-container {
             position: fixed;
             top: 0;
@@ -321,13 +365,6 @@
             pointer-events: none;
             z-index: 100;
             overflow: hidden;
-        }
-        
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            opacity: 0;
         }
         
         @keyframes confetti-fall {
@@ -341,124 +378,173 @@
             }
         }
 
-        /* Tooltip */
-        .tooltip {
-            position: relative;
-        }
-        
-        .tooltip::after {
-            content: attr(data-tooltip);
+        /* Card suits decoration */
+        .suit-decoration {
             position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0,0,0,0.9);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 12px;
-            white-space: nowrap;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s;
-        }
-        
-        .tooltip:hover::after {
-            opacity: 1;
-            visibility: visible;
-            bottom: calc(100% + 5px);
+            font-size: 100px;
+            opacity: 0.03;
+            color: #ffd700;
+            pointer-events: none;
         }
 
         /* Sound toggle */
         .sound-toggle {
+            background: linear-gradient(180deg, #8b0000 0%, #5c0000 100%);
+            border: 2px solid #ffd700;
             transition: all 0.3s ease;
+        }
+        
+        .sound-toggle:hover {
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
         }
         
         .sound-toggle.muted {
             opacity: 0.5;
         }
+
+        /* Chips decoration */
+        .chip {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            position: absolute;
+            pointer-events: none;
+        }
+        
+        .chip-red {
+            background: repeating-conic-gradient(#8b0000 0deg 30deg, #5c0000 30deg 60deg);
+            border: 3px solid #ffd700;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+        }
+        
+        .chip-gold {
+            background: repeating-conic-gradient(#ffd700 0deg 30deg, #b8860b 30deg 60deg);
+            border: 3px solid #fff;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+        }
+
+        /* Label styling */
+        .casino-label {
+            color: #ffd700;
+            font-family: 'Cinzel', serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 11px;
+        }
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: 2px solid #ffd700;
+            border-radius: 50%;
+            cursor: pointer;
+            background: transparent;
+        }
+        
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 50%;
+        }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4 relative z-10">
+
+    <!-- Декоративні елементи -->
+    <div class="suit-decoration" style="top: 5%; left: 5%;">♠</div>
+    <div class="suit-decoration" style="top: 10%; right: 10%;">♥</div>
+    <div class="suit-decoration" style="bottom: 15%; left: 8%;">♦</div>
+    <div class="suit-decoration" style="bottom: 5%; right: 5%;">♣</div>
 
     <!-- Контейнер конфеті -->
     <div id="confetti-container" class="confetti-container"></div>
 
     <!-- Таймер -->
     <div id="timer-container" class="hidden fixed top-6 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none">
-        <div class="bg-black/90 border-2 border-red-500 px-10 py-4 rounded-2xl backdrop-blur-xl shadow-2xl">
-            <span id="countdown-display" class="tense-timer text-5xl md:text-7xl font-black text-red-500 tracking-widest">
+        <div class="bg-black/95 border-4 border-red-600 px-10 py-4 rounded-lg shadow-2xl" style="box-shadow: 0 0 50px rgba(255,0,0,0.5);">
+            <span id="countdown-display" class="casino-timer text-5xl md:text-7xl font-black tracking-widest">
                 00.00
             </span>
         </div>
     </div>
 
     <!-- Кнопка звуку -->
-    <button id="sound-toggle" class="sound-toggle fixed top-4 right-4 z-50 bg-white/10 hover:bg-white/20 backdrop-blur-md p-3 rounded-full transition-all" onclick="toggleSound()">
-        <svg id="sound-on-icon" class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <button id="sound-toggle" class="sound-toggle fixed top-4 right-4 z-50 p-3 rounded-full" onclick="toggleSound()">
+        <svg id="sound-on-icon" class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
         </svg>
-        <svg id="sound-off-icon" class="w-6 h-6 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg id="sound-off-icon" class="w-6 h-6 text-yellow-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>
         </svg>
     </button>
 
-    <h1 class="text-3xl md:text-5xl font-black text-center mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-red-500">
-        🎰 Командна Рулетка
-    </h1>
+    <!-- Заголовок -->
+    <div class="text-center mb-8 relative">
+        <div class="text-yellow-600 text-sm tracking-[0.5em] uppercase mb-2" style="font-family: 'Cinzel', serif;">
+            ♠ ♥ Premium Casino Experience ♣ ♦
+        </div>
+        <h1 class="text-4xl md:text-6xl font-black gold-text" style="font-family: 'Cinzel', serif;">
+            ROYAL ROULETTE
+        </h1>
+        <div class="text-red-500 text-lg tracking-widest mt-2" style="font-family: 'Cinzel', serif;">
+            Командна Рулетка
+        </div>
+    </div>
 
     <div class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
         <!-- ПАНЕЛЬ НАЛАШТУВАНЬ -->
-        <div id="config-panel" class="lg:col-span-4 glass-panel rounded-2xl p-6 transition-all duration-500">
-            <h2 class="text-xl font-black uppercase text-white mb-6 pb-3 border-b border-white/10 flex items-center gap-3">
-                <span class="text-2xl">⚙️</span> Налаштування
+        <div id="config-panel" class="lg:col-span-4 casino-panel rounded-lg p-6 transition-all duration-500">
+            <h2 class="text-xl font-black uppercase gold-text mb-6 pb-3 border-b border-yellow-600/30 flex items-center gap-3" style="font-family: 'Cinzel', serif;">
+                <span>⚙️</span> Налаштування
             </h2>
 
             <div class="space-y-6">
                 <!-- ПРЕСЕТИ -->
                 <div>
-                    <label class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-3 block flex items-center gap-2">
-                        <span>⚡</span> Швидкий вибір
+                    <label class="casino-label mb-3 block flex items-center gap-2">
+                        <span>🎲</span> Швидкий вибір
                     </label>
                     <div class="grid grid-cols-3 gap-2">
-                        <button onclick="loadPreset('designers')" class="preset-btn bg-gradient-to-br from-purple-600 to-purple-800 hover:from-purple-500 hover:to-purple-700 text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-lg">
-                            👨‍🎨 Дизайнери
+                        <button onclick="loadPreset('designers')" class="preset-btn py-3 rounded-lg font-bold text-xs tracking-wider">
+                            👨‍🎨 Дизайн
                         </button>
-                        <button onclick="loadPreset('producers')" class="preset-btn bg-gradient-to-br from-pink-600 to-pink-800 hover:from-pink-500 hover:to-pink-700 text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-lg">
-                            🎬 Продюсери
+                        <button onclick="loadPreset('producers')" class="preset-btn py-3 rounded-lg font-bold text-xs tracking-wider">
+                            🎬 Продюс
                         </button>
-                        <button onclick="loadPreset('tasks')" class="preset-btn bg-gradient-to-br from-teal-600 to-teal-800 hover:from-teal-500 hover:to-teal-700 text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-lg">
+                        <button onclick="loadPreset('tasks')" class="preset-btn py-3 rounded-lg font-bold text-xs tracking-wider">
                             📋 Таски
                         </button>
-                        <button onclick="loadPreset('template')" class="preset-btn bg-gradient-to-br from-indigo-600 to-indigo-800 hover:from-indigo-500 hover:to-indigo-700 text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-lg">
-                            📝 Темплейт
+                        <button onclick="loadPreset('template')" class="preset-btn py-3 rounded-lg font-bold text-xs tracking-wider">
+                            📝 Темпл
                         </button>
-                        <button onclick="loadPreset('influencer')" class="preset-btn bg-gradient-to-br from-orange-600 to-orange-800 hover:from-orange-500 hover:to-orange-700 text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-lg">
-                            🌟 Інфлюенсер
+                        <button onclick="loadPreset('influencer')" class="preset-btn py-3 rounded-lg font-bold text-xs tracking-wider">
+                            🌟 Інфл
                         </button>
-                        <button onclick="loadPreset('custom')" class="preset-btn bg-gradient-to-br from-gray-600 to-gray-800 hover:from-gray-500 hover:to-gray-700 text-white py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-lg">
-                            💾 Збережене
+                        <button onclick="loadPreset('custom')" class="preset-btn py-3 rounded-lg font-bold text-xs tracking-wider">
+                            💾 Збер
                         </button>
                     </div>
                 </div>
 
-                <div class="h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+                <div class="h-px bg-gradient-to-r from-transparent via-yellow-600/50 to-transparent"></div>
 
                 <!-- Час та Повтори -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2 block flex items-center gap-2">
+                        <label class="casino-label mb-2 block flex items-center gap-2">
                             <span>⏱️</span> Час (сек)
                         </label>
-                        <input type="number" id="duration-number" value="10" min="1" max="60" class="w-full bg-white/5 border border-white/10 text-white text-center rounded-xl p-3 font-bold focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all">
+                        <input type="number" id="duration-number" value="10" min="1" max="60" class="casino-input w-full text-center rounded-lg p-3 font-bold">
                     </div>
                     <div>
-                        <label class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2 block flex items-center gap-2">
+                        <label class="casino-label mb-2 block flex items-center gap-2">
                             <span>🔄</span> Повтори
                         </label>
-                        <select id="sector-multiplier" onchange="drawWheel()" class="w-full bg-white/5 border border-white/10 text-white rounded-xl p-3 font-bold cursor-pointer focus:border-purple-500 focus:outline-none transition-all">
+                        <select id="sector-multiplier" onchange="drawWheel()" class="casino-select w-full rounded-lg p-3 font-bold cursor-pointer">
                             <option value="1">x1</option>
                             <option value="2">x2</option>
                             <option value="3" selected>x3</option>
@@ -470,14 +556,14 @@
                 <!-- Список -->
                 <div>
                     <div class="flex justify-between items-center mb-3">
-                        <label class="text-xs text-gray-400 uppercase font-bold tracking-wider flex items-center gap-2">
+                        <label class="casino-label flex items-center gap-2">
                             <span>🎯</span> Сектори
                         </label>
                         <div class="flex gap-2">
-                            <button onclick="saveCustomPreset()" class="tooltip text-xs bg-green-600/30 hover:bg-green-600/50 text-green-400 px-3 py-2 rounded-lg font-bold uppercase transition-all" data-tooltip="Зберегти">
+                            <button onclick="saveCustomPreset()" class="text-xs bg-green-800 hover:bg-green-700 text-yellow-400 px-3 py-2 rounded-lg font-bold border border-yellow-600/50 transition-all" title="Зберегти">
                                 💾
                             </button>
-                            <button onclick="addItem()" class="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg font-bold uppercase transition-all">
+                            <button onclick="addItem()" class="text-xs bg-red-900 hover:bg-red-800 text-yellow-400 px-3 py-2 rounded-lg font-bold border border-yellow-600/50 transition-all">
                                 + Додати
                             </button>
                         </div>
@@ -488,13 +574,13 @@
                 </div>
             </div>
 
-            <button id="main-spin-btn" onclick="spinWheel()" class="flat-btn w-full mt-6 py-5 rounded-2xl text-white font-black text-2xl uppercase tracking-widest">
-                🎲 КРУТИТИ!
+            <button id="main-spin-btn" onclick="spinWheel()" class="spin-btn w-full mt-6 py-5 rounded-lg font-black text-xl md:text-2xl">
+                🎰 КРУТИТИ
             </button>
             
             <div id="history-container" class="mt-4 hidden">
                 <div class="flex justify-between items-center mb-2">
-                    <span class="text-xs text-gray-400 uppercase font-bold">📜 Історія</span>
+                    <span class="casino-label">📜 Історія</span>
                     <button onclick="clearHistory()" class="text-xs text-red-400 hover:text-red-300">Очистити</button>
                 </div>
                 <div id="history-list" class="flex flex-wrap gap-2"></div>
@@ -504,42 +590,51 @@
         <!-- ЗОНА КОЛЕСА -->
         <div class="lg:col-span-8 flex flex-col items-center justify-center relative w-full min-h-[500px]">
             
-            <div id="wheel-wrapper" class="wheel-container relative w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] md:w-[550px] md:h-[550px]">
+            <div id="wheel-wrapper" class="relative">
                 
-                <!-- Світіння -->
-                <div class="wheel-glow"></div>
-                
-                <!-- Кільце -->
-                <div class="wheel-ring"></div>
-                
-                <!-- Контейнер стрілки -->
-                <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 z-20">
-                    <div id="pointer-body" class="pointer-sharp">
-                        <svg width="50" height="70" viewBox="0 0 50 70">
-                            <defs>
-                                <linearGradient id="pointerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                                    <stop offset="0%" style="stop-color:#ef4444"/>
-                                    <stop offset="100%" style="stop-color:#b91c1c"/>
-                                </linearGradient>
-                                <filter id="pointerShadow">
-                                    <feDropShadow dx="0" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.5"/>
-                                </filter>
-                            </defs>
-                            <polygon points="25,70 0,0 50,0" fill="url(#pointerGrad)" filter="url(#pointerShadow)"/>
-                            <polygon points="25,60 10,5 40,5" fill="rgba(255,255,255,0.2)"/>
-                        </svg>
+                <!-- Рамка колеса -->
+                <div class="wheel-frame w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] md:w-[550px] md:h-[550px]">
+                    
+                    <!-- Стрілка -->
+                    <div class="absolute -top-16 left-1/2 transform -translate-x-1/2 z-30">
+                        <div id="pointer-body" class="casino-pointer">
+                            <svg width="60" height="80" viewBox="0 0 60 80">
+                                <defs>
+                                    <linearGradient id="pointerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#ffd700"/>
+                                        <stop offset="50%" style="stop-color:#b8860b"/>
+                                        <stop offset="100%" style="stop-color:#8b6914"/>
+                                    </linearGradient>
+                                    <linearGradient id="pointerShine" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:rgba(255,255,255,0)"/>
+                                        <stop offset="50%" style="stop-color:rgba(255,255,255,0.3)"/>
+                                        <stop offset="100%" style="stop-color:rgba(255,255,255,0)"/>
+                                    </linearGradient>
+                                </defs>
+                                <polygon points="30,80 5,10 30,20 55,10" fill="url(#pointerGrad)" stroke="#ffd700" stroke-width="2"/>
+                                <polygon points="30,75 15,15 30,22 45,15" fill="url(#pointerShine)"/>
+                                <circle cx="30" cy="15" r="8" fill="#ffd700" stroke="#8b6914" stroke-width="2"/>
+                                <circle cx="30" cy="15" r="4" fill="#8b0000"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Колесо -->
+                    <canvas id="wheel-canvas" width="600" height="600" class="w-full h-full rounded-full"></canvas>
+                    
+                    <!-- Центр колеса -->
+                    <div class="center-hub absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center z-10">
+                        <div class="center-hub-inner w-16 h-16 md:w-24 md:h-24 rounded-full flex items-center justify-center">
+                            <span class="text-yellow-400 font-black text-xl md:text-3xl" style="font-family: 'Cinzel', serif;">GO</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Саме колесо -->
-                <canvas id="wheel-canvas" width="600" height="600" class="w-full h-full rounded-full"></canvas>
-                
-                <!-- Центр колеса -->
-                <div class="center-hub absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 md:w-28 md:h-28 rounded-full flex items-center justify-center z-10 border-4 border-white/20">
-                    <div class="center-hub-inner w-14 h-14 md:w-20 md:h-20 rounded-full flex items-center justify-center">
-                        <span class="text-white font-black text-lg md:text-2xl">GO</span>
-                    </div>
-                </div>
+                <!-- Декоративні фішки -->
+                <div class="chip chip-red hidden md:block" style="top: 0; left: -60px;"></div>
+                <div class="chip chip-gold hidden md:block" style="top: 40px; left: -40px;"></div>
+                <div class="chip chip-red hidden md:block" style="bottom: 20px; right: -50px;"></div>
+                <div class="chip chip-gold hidden md:block" style="bottom: 60px; right: -30px;"></div>
             </div>
 
         </div>
@@ -547,31 +642,35 @@
 
     <!-- Модальне вікно переможця -->
     <div id="result-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 modal-backdrop">
-        <div class="modal-content p-8 md:p-12 rounded-3xl max-w-lg w-full text-center transform scale-100 transition-all">
+        <div class="modal-content p-8 md:p-12 rounded-lg max-w-lg w-full text-center">
             
-            <div class="text-6xl mb-4">🎉</div>
+            <div class="text-6xl mb-4">🏆</div>
             
-            <h2 class="text-2xl md:text-3xl font-black text-white uppercase mb-2 tracking-wider">
-                Переможець!
+            <div class="text-yellow-600 text-sm tracking-[0.3em] uppercase mb-2" style="font-family: 'Cinzel', serif;">
+                ♠ ♥ Вітаємо! ♣ ♦
+            </div>
+            
+            <h2 class="text-2xl md:text-3xl font-black gold-text uppercase mb-2 tracking-wider" style="font-family: 'Cinzel', serif;">
+                JACKPOT!
             </h2>
             
             <div class="my-8">
-                <div id="winner-img-container" class="winner-img w-36 h-36 md:w-48 md:h-48 rounded-full mx-auto mb-6 bg-cover bg-center border-4 border-yellow-400 shadow-2xl hidden"></div>
-                <div id="winner-text" class="winner-glow text-4xl md:text-6xl font-black text-yellow-400 break-words leading-tight"></div>
+                <div id="winner-img-container" class="winner-img w-36 h-36 md:w-48 md:h-48 rounded-full mx-auto mb-6 bg-cover bg-center hidden"></div>
+                <div id="winner-text" class="winner-text text-4xl md:text-6xl font-black break-words leading-tight"></div>
             </div>
 
-            <button onclick="closeModal()" class="w-full py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white rounded-2xl font-bold text-xl uppercase transition-all shadow-lg hover:shadow-xl hover:scale-105">
+            <button onclick="closeModal()" class="spin-btn w-full py-4 rounded-lg font-bold text-xl uppercase">
                 Чудово! ✨
             </button>
         </div>
     </div>
 
 <script>
-    // Кольори секторів
+    // Casino colors - red and black like roulette
     const flatColors = [
-        '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
-        '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F',
-        '#BB8FCE', '#85C1E9', '#F8B500', '#FF8C00'
+        '#8B0000', '#1a1a1a', '#B22222', '#2d2d2d', 
+        '#DC143C', '#3d3d3d', '#CD5C5C', '#4d4d4d',
+        '#A52A2A', '#5d5d5d', '#800000', '#6d6d6d'
     ];
 
     // Пресети
@@ -618,7 +717,7 @@
     let soundEnabled = true;
     let history = [];
 
-    // Audio context для звуків
+    // Audio context
     let audioContext = null;
 
     function initAudio() {
@@ -636,20 +735,21 @@
         oscillator.connect(gainNode);
         gainNode.connect(audioContext.destination);
         
-        oscillator.frequency.value = 800 + Math.random() * 400;
+        oscillator.frequency.value = 1200 + Math.random() * 200;
         oscillator.type = 'sine';
         
-        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+        gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.03);
         
         oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.05);
+        oscillator.stop(audioContext.currentTime + 0.03);
     }
 
     function playWinSound() {
         if (!soundEnabled || !audioContext) return;
         
-        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        // Casino win sound - ascending notes
+        const notes = [392, 523.25, 659.25, 783.99, 1046.50]; // G4, C5, E5, G5, C6
         
         notes.forEach((freq, i) => {
             setTimeout(() => {
@@ -660,14 +760,14 @@
                 gainNode.connect(audioContext.destination);
                 
                 oscillator.frequency.value = freq;
-                oscillator.type = 'sine';
+                oscillator.type = 'triangle';
                 
-                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
                 
                 oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.3);
-            }, i * 100);
+                oscillator.stop(audioContext.currentTime + 0.4);
+            }, i * 80);
         });
     }
 
@@ -690,7 +790,7 @@
         localStorage.setItem('roulette_sound', soundEnabled);
     }
 
-    // Елементи
+    // Elements
     const itemsList = document.getElementById('items-list');
     const canvas = document.getElementById('wheel-canvas');
     const ctx = canvas.getContext('2d');
@@ -705,7 +805,6 @@
     const wheelWrapper = document.getElementById('wheel-wrapper');
 
     function init() {
-        // Завантаження збережених налаштувань
         const savedSound = localStorage.getItem('roulette_sound');
         if (savedSound !== null) {
             soundEnabled = savedSound === 'true';
@@ -732,7 +831,6 @@
             spinDuration = val;
         });
 
-        // Ініціалізація аудіо по кліку
         document.body.addEventListener('click', initAudio, { once: true });
     }
 
@@ -786,7 +884,6 @@
         presets.custom = dataToSave;
         localStorage.setItem('roulette_custom', JSON.stringify(dataToSave));
         
-        // Показати повідомлення
         const btn = event.target;
         const originalText = btn.innerHTML;
         btn.innerHTML = '✓';
@@ -833,33 +930,33 @@
         itemsList.innerHTML = '';
         items.forEach((item, index) => {
             const row = document.createElement('div');
-            row.className = 'item-row flex items-center gap-2 p-3 rounded-xl cursor-move';
+            row.className = 'item-row flex items-center gap-2 p-3 rounded-lg cursor-move';
             row.draggable = true;
             row.ondragstart = (e) => handleDragStart(e, index);
             row.ondragover = handleDragOver;
             row.ondrop = (e) => handleDrop(e, index);
             row.ondragend = handleDragEnd;
             
-            let imgPreview = `<div class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-gray-500 font-bold text-xs border border-white/10">📷</div>`;
+            let imgPreview = `<div class="w-9 h-9 rounded-full bg-black/50 flex items-center justify-center text-yellow-600 font-bold text-xs border border-yellow-600/30">📷</div>`;
             
             if (item.imgObj) {
-                imgPreview = `<div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-green-400 shadow-lg" style="background-image: url('${item.image}')"></div>`;
+                imgPreview = `<div class="w-9 h-9 rounded-full bg-cover bg-center border-2 border-yellow-500 shadow-lg" style="background-image: url('${item.image}')"></div>`;
             } else if (item.image && item.image.startsWith('data:')) {
-                imgPreview = `<div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-white/30 shadow-lg" style="background-image: url('${item.image}')"></div>`;
+                imgPreview = `<div class="w-9 h-9 rounded-full bg-cover bg-center border-2 border-yellow-600/50 shadow-lg" style="background-image: url('${item.image}')"></div>`;
             }
 
             row.innerHTML = `
-                <span class="text-gray-500 cursor-move">⋮⋮</span>
-                <input type="color" value="${item.color}" onchange="updateItem(${index}, 'color', this.value)" class="w-8 h-8 rounded-full cursor-pointer">
+                <span class="text-yellow-600/50 cursor-move">⋮⋮</span>
+                <input type="color" value="${item.color}" onchange="updateItem(${index}, 'color', this.value)" class="w-7 h-7 rounded-full cursor-pointer">
                 <div class="flex-1">
-                    <input type="text" value="${item.text}" oninput="updateItem(${index}, 'text', this.value)" class="w-full bg-transparent text-white font-bold focus:outline-none placeholder-gray-500" placeholder="Назва">
+                    <input type="text" value="${item.text}" oninput="updateItem(${index}, 'text', this.value)" class="w-full bg-transparent text-yellow-100 font-bold focus:outline-none placeholder-yellow-900" placeholder="Назва">
                 </div>
                 <label class="cursor-pointer hover:opacity-80 transition-opacity hover:scale-110" title="Завантажити фото">
                     <input type="file" accept="image/*" class="hidden" onchange="handleImageUpload(${index}, this)">
                     ${imgPreview}
                 </label>
-                <input type="number" step="0.1" min="0.1" value="${item.weight}" onchange="updateItem(${index}, 'weight', this.value)" class="w-12 bg-white/5 text-center text-white rounded-lg py-2 font-bold border border-white/10 focus:border-purple-500 focus:outline-none" title="Шанс">
-                <button onclick="removeItem(${index})" class="text-gray-500 hover:text-red-400 px-1 text-xl font-bold transition-colors hover:scale-110">×</button>
+                <input type="number" step="0.1" min="0.1" value="${item.weight}" onchange="updateItem(${index}, 'weight', this.value)" class="casino-input w-12 text-center text-sm rounded-lg py-1 font-bold" title="Шанс">
+                <button onclick="removeItem(${index})" class="text-yellow-600/50 hover:text-red-500 px-1 text-xl font-bold transition-colors hover:scale-110">×</button>
             `;
             itemsList.appendChild(row);
         });
@@ -914,7 +1011,7 @@
         const height = canvas.height;
         const centerX = width / 2;
         const centerY = height / 2;
-        const radius = width / 2 - 15;
+        const radius = width / 2 - 20;
 
         ctx.clearRect(0, 0, width, height);
         
@@ -930,11 +1027,12 @@
         ctx.translate(centerX, centerY);
         ctx.rotate(currentRotation * Math.PI / 180);
 
-        // Тінь колеса
-        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-        ctx.shadowBlur = 30;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 10;
+        // Outer ring decoration
+        ctx.beginPath();
+        ctx.arc(0, 0, radius + 5, 0, Math.PI * 2);
+        ctx.strokeStyle = '#ffd700';
+        ctx.lineWidth = 3;
+        ctx.stroke();
 
         for (let m = 0; m < multiplier; m++) {
             for (let i = 0; i < items.length; i++) {
@@ -942,58 +1040,59 @@
                 const sliceAngle = (item.weight / totalWeightAll) * 2 * Math.PI;
                 const endAngle = startAngle + sliceAngle;
 
-                // Малюємо сектор з градієнтом
+                // Draw sector
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
                 ctx.arc(0, 0, radius, startAngle, endAngle);
                 ctx.closePath();
                 
-                // Градієнт для сектора
+                // Gradient for sector
                 const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
-                gradient.addColorStop(0, lightenColor(item.color, 30));
-                gradient.addColorStop(0.5, item.color);
-                gradient.addColorStop(1, darkenColor(item.color, 20));
+                gradient.addColorStop(0, lightenColor(item.color, 40));
+                gradient.addColorStop(0.3, lightenColor(item.color, 20));
+                gradient.addColorStop(0.7, item.color);
+                gradient.addColorStop(1, darkenColor(item.color, 30));
                 
                 ctx.fillStyle = gradient;
                 ctx.fill();
                 
-                // Межі секторів
-                ctx.strokeStyle = "rgba(255,255,255,0.3)";
+                // Gold border between sectors
+                ctx.strokeStyle = "#ffd700";
                 ctx.lineWidth = 2;
                 ctx.stroke();
 
-                // Текст та зображення
+                // Text and image
                 ctx.save();
                 const angleMid = startAngle + sliceAngle / 2;
                 ctx.rotate(angleMid);
                 
-                ctx.fillStyle = "#fff";
-                ctx.font = multiplier > 2 ? "bold 14px Montserrat" : "bold 20px Montserrat";
+                ctx.fillStyle = "#ffd700";
+                ctx.font = multiplier > 2 ? "bold 14px 'Cinzel', serif" : "bold 18px 'Cinzel', serif";
                 ctx.textAlign = "right";
                 ctx.textBaseline = "middle";
-                ctx.shadowColor = "rgba(0,0,0,0.7)";
+                ctx.shadowColor = "rgba(0,0,0,0.8)";
                 ctx.shadowBlur = 4;
                 ctx.shadowOffsetX = 2;
                 ctx.shadowOffsetY = 2;
 
-                const contentRadius = radius - 25;
+                const contentRadius = radius - 30;
 
                 if (item.imgObj) {
-                    const imgSize = multiplier > 2 ? 50 : 80;
-                    const imgDist = contentRadius - (multiplier > 2 ? 35 : 50); 
+                    const imgSize = multiplier > 2 ? 45 : 70;
+                    const imgDist = contentRadius - (multiplier > 2 ? 30 : 45); 
 
                     if (item.text.trim() !== "") {
-                        ctx.font = multiplier > 2 ? "bold 12px Montserrat" : "bold 16px Montserrat";
-                        ctx.fillText(item.text, imgDist - (multiplier > 2 ? 35 : 50), 0);
+                        ctx.font = multiplier > 2 ? "bold 11px 'Cinzel', serif" : "bold 14px 'Cinzel', serif";
+                        ctx.fillText(item.text, imgDist - (multiplier > 2 ? 30 : 45), 0);
                     }
 
                     ctx.translate(imgDist, 0); 
                     ctx.rotate(Math.PI / 2);
 
-                    // Обводка зображення
+                    // Gold border for image
                     ctx.beginPath();
                     ctx.arc(0, 0, imgSize / 2 + 3, 0, Math.PI * 2);
-                    ctx.fillStyle = "#fff";
+                    ctx.fillStyle = "#ffd700";
                     ctx.fill();
 
                     ctx.beginPath();
@@ -1012,16 +1111,18 @@
             }
         }
 
-        // Внутрішнє кільце
+        // Inner decorative ring
         ctx.beginPath();
-        ctx.arc(0, 0, 50, 0, Math.PI * 2);
+        ctx.arc(0, 0, 55, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(0,0,0,0.3)';
         ctx.fill();
+        ctx.strokeStyle = '#ffd700';
+        ctx.lineWidth = 2;
+        ctx.stroke();
 
         ctx.restore();
     }
 
-    // Допоміжні функції для кольорів
     function lightenColor(color, percent) {
         const num = parseInt(color.replace('#', ''), 16);
         const amt = Math.round(2.55 * percent);
@@ -1040,7 +1141,6 @@
         return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
     }
 
-    // Анімація
     function spinWheel() {
         if (isSpinning) return;
         if(items.length < 1) return;
@@ -1079,12 +1179,11 @@
             
             if (elapsed < durationSec) {
                 const t = elapsed / durationSec;
-                // Покращена easing функція
                 const ease = 1 - Math.pow(1 - t, 4);
                 
                 const newRotation = startRotation + (endRotation - startRotation) * ease;
                 
-                // Логіка тікера
+                // Ticker logic
                 const multiplier = parseInt(multiplierInput.value) || 1;
                 const totalWeightOneSet = getTotalWeightSingleSet();
                 const totalWeightAll = totalWeightOneSet * multiplier;
@@ -1109,11 +1208,11 @@
                 }
 
                 if (currentTickGlobalIndex !== lastTickIndex && lastTickIndex !== -1) {
-                    pointerBody.style.transform = "rotate(-20deg)";
+                    pointerBody.style.transform = "rotate(-15deg)";
                     playTickSound();
                     setTimeout(() => {
                         pointerBody.style.transform = "rotate(0deg)";
-                    }, 80);
+                    }, 60);
                 }
                 lastTickIndex = currentTickGlobalIndex;
 
@@ -1191,7 +1290,6 @@
         
         resultModal.classList.remove('hidden');
         
-        // Додати до історії
         addToHistory(item.text);
     }
 
@@ -1213,7 +1311,7 @@
         
         container.classList.remove('hidden');
         list.innerHTML = history.map(h => 
-            `<span class="bg-white/10 px-3 py-1 rounded-full text-sm text-gray-300" title="${h.time}">${h.name}</span>`
+            `<span class="bg-red-900/50 border border-yellow-600/30 px-3 py-1 rounded-full text-sm text-yellow-200" title="${h.time}">${h.name}</span>`
         ).join('');
     }
 
@@ -1228,19 +1326,20 @@
         clearConfetti();
     }
 
-    // Конфеті
+    // Confetti - casino style (gold, red, black)
     function createConfetti() {
         const container = document.getElementById('confetti-container');
-        const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#F7DC6F', '#BB8FCE'];
+        const colors = ['#ffd700', '#b8860b', '#8b0000', '#dc143c', '#fff', '#ffec8b'];
+        const shapes = ['●', '◆', '♠', '♥', '♣', '♦', '★'];
         
-        for (let i = 0; i < 150; i++) {
+        for (let i = 0; i < 100; i++) {
             const confetti = document.createElement('div');
             confetti.className = 'confetti';
             confetti.style.left = Math.random() * 100 + '%';
-            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.width = (Math.random() * 10 + 5) + 'px';
-            confetti.style.height = (Math.random() * 10 + 5) + 'px';
-            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+            confetti.style.color = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            confetti.style.textShadow = '0 0 10px currentColor';
+            confetti.innerText = shapes[Math.floor(Math.random() * shapes.length)];
             confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear forwards`;
             confetti.style.animationDelay = Math.random() * 0.5 + 's';
             container.appendChild(confetti);
@@ -1254,7 +1353,6 @@
         }, 500);
     }
 
-    // Ініціалізація
     init();
 </script>
 </body>
