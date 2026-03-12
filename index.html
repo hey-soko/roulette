@@ -3,219 +3,677 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Командна Рулетка</title>
+    <title>🎰 Royal Roulette - Командна Рулетка</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Cinzel:wght@400;700;900&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: #1e1e1e;
+            font-family: 'Playfair Display', serif;
+            background: 
+                radial-gradient(ellipse at top, #1a0a0a 0%, #0d0505 50%, #000 100%);
             color: #fff;
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Velvet texture overlay */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        /* Gold sparkles */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(2px 2px at 100px 50px, #ffd700, transparent),
+                radial-gradient(2px 2px at 200px 150px, #ffd700, transparent),
+                radial-gradient(1px 1px at 300px 250px, #fff, transparent),
+                radial-gradient(2px 2px at 400px 100px, #ffd700, transparent),
+                radial-gradient(1px 1px at 500px 300px, #ffd700, transparent),
+                radial-gradient(2px 2px at 50px 400px, #fff, transparent),
+                radial-gradient(1px 1px at 150px 350px, #ffd700, transparent),
+                radial-gradient(2px 2px at 250px 450px, #ffd700, transparent);
+            background-size: 550px 500px;
+            animation: sparkle 8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
         }
 
-        .glass-panel {
-            background: #2a2a2a;
-            border: 2px solid #333;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+        /* Casino panel */
+        .casino-panel {
+            background: linear-gradient(180deg, #1a0a0a 0%, #0d0505 100%);
+            border: 3px solid;
+            border-image: linear-gradient(180deg, #ffd700 0%, #b8860b 50%, #ffd700 100%) 1;
+            box-shadow: 
+                0 0 30px rgba(255, 215, 0, 0.2),
+                inset 0 0 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        
+        .casino-panel::before {
+            content: '♠ ♥ ♣ ♦';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0d0505;
+            padding: 0 15px;
+            color: #ffd700;
+            font-size: 14px;
+            letter-spacing: 8px;
         }
 
-        .flat-btn {
-            background-color: #2563eb;
-            border: none;
-            transition: all 0.2s;
-            box-shadow: 0 4px 0 #1e40af;
+        /* Gold text */
+        .gold-text {
+            background: linear-gradient(180deg, #ffd700 0%, #ffec8b 25%, #ffd700 50%, #b8860b 75%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
         }
-        .flat-btn:active {
-            transform: translateY(4px);
-            box-shadow: 0 0 0 #1e40af;
+        
+        .gold-border {
+            border: 2px solid transparent;
+            background: linear-gradient(#1a0a0a, #1a0a0a) padding-box,
+                        linear-gradient(180deg, #ffd700, #b8860b, #ffd700) border-box;
         }
-        .flat-btn:disabled {
-            background-color: #4b5563;
+
+        /* Spin button */
+        .spin-btn {
+            background: linear-gradient(180deg, #ffd700 0%, #b8860b 50%, #8b6914 100%);
+            border: 3px solid #ffd700;
+            color: #1a0a0a;
+            font-family: 'Cinzel', serif;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 6px 0 #5c4a0a,
+                0 10px 30px rgba(255, 215, 0, 0.4),
+                inset 0 2px 0 rgba(255, 255, 255, 0.3);
+        }
+        
+        .spin-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { left: -100%; }
+            50%, 100% { left: 100%; }
+        }
+        
+        .spin-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 9px 0 #5c4a0a,
+                0 15px 40px rgba(255, 215, 0, 0.5),
+                inset 0 2px 0 rgba(255, 255, 255, 0.3);
+        }
+        
+        .spin-btn:active {
+            transform: translateY(6px);
+            box-shadow: 
+                0 0 0 #5c4a0a,
+                0 5px 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .spin-btn:disabled {
+            background: linear-gradient(180deg, #4a4a4a 0%, #2a2a2a 100%);
+            border-color: #4a4a4a;
+            color: #666;
             box-shadow: none;
-            transform: translateY(4px);
+            transform: translateY(6px);
         }
 
+        /* Preset buttons */
+        .preset-btn {
+            background: linear-gradient(180deg, #8b0000 0%, #5c0000 100%);
+            border: 2px solid #ffd700;
+            color: #ffd700;
+            font-family: 'Cinzel', serif;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .preset-btn:hover {
+            background: linear-gradient(180deg, #a50000 0%, #7c0000 100%);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .preset-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Custom scrollbar */
         .custom-scrollbar::-webkit-scrollbar {
             width: 8px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: #333;
+            background: #1a0a0a;
+            border: 1px solid #333;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #555;
+            background: linear-gradient(180deg, #ffd700, #b8860b);
             border-radius: 4px;
         }
 
-        .pointer-sharp {
-            filter: drop-shadow(0 4px 2px rgba(0,0,0,0.5));
-            z-index: 20;
-            transform-origin: top center;
-            transition: transform 0.1s ease-out;
-        }
-        
-        .tense-timer {
+        /* Timer */
+        .casino-timer {
             font-family: 'Orbitron', sans-serif;
-            text-shadow: 0 0 10px rgba(239, 68, 68, 0.7);
-        }
-        .pulse-anim {
-            animation: pulse-red 0.5s infinite alternate;
-        }
-        @keyframes pulse-red {
-            from { transform: scale(1); text-shadow: 0 0 10px red; color: #fff; }
-            to { transform: scale(1.1); text-shadow: 0 0 20px red; color: #fca5a5; }
+            color: #ff0000;
+            text-shadow: 
+                0 0 10px #ff0000,
+                0 0 20px #ff0000,
+                0 0 40px #ff0000;
         }
         
-        .img-loaded-indicator {
-            border-color: #4CD964 !important;
+        .pulse-anim {
+            animation: pulse-red 0.3s infinite alternate;
+        }
+        
+        @keyframes pulse-red {
+            from { transform: scale(1); opacity: 1; }
+            to { transform: scale(1.1); opacity: 0.8; }
         }
 
-        input[type="range"] {
-            accent-color: #2563eb;
+        /* Wheel container */
+        .wheel-frame {
+            position: relative;
+            padding: 20px;
+            background: linear-gradient(135deg, #2a1810 0%, #1a0a0a 50%, #2a1810 100%);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 0 8px #ffd700,
+                0 0 0 12px #b8860b,
+                0 0 0 20px #1a0a0a,
+                0 0 60px rgba(255, 215, 0, 0.3),
+                inset 0 0 100px rgba(0,0,0,0.5);
+        }
+        
+        .wheel-frame::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, #ffd700, #b8860b, #ffd700, #b8860b, #ffd700, #b8860b, #ffd700, #b8860b, #ffd700);
+            z-index: -1;
+            animation: rotate-border 20s linear infinite;
+        }
+        
+        @keyframes rotate-border {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .spinning .wheel-frame::before {
+            animation: rotate-border 2s linear infinite;
+        }
+
+        /* Pointer */
+        .casino-pointer {
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.8));
+            z-index: 30;
+            transform-origin: bottom center;
+            transition: transform 0.08s ease-out;
+        }
+
+        /* Center hub */
+        .center-hub {
+            background: radial-gradient(circle at 30% 30%, #ffd700 0%, #b8860b 50%, #8b6914 100%);
+            box-shadow: 
+                0 0 30px rgba(255, 215, 0, 0.5),
+                inset 0 -5px 20px rgba(0,0,0,0.5),
+                inset 0 5px 10px rgba(255,255,255,0.3);
+            border: 4px solid #ffd700;
+        }
+        
+        .center-hub-inner {
+            background: linear-gradient(180deg, #8b0000 0%, #5c0000 100%);
+            border: 3px solid #ffd700;
+            box-shadow: inset 0 2px 10px rgba(255,255,255,0.2);
+        }
+
+        /* Item row */
+        .item-row {
+            background: rgba(139, 0, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            transition: all 0.2s ease;
+        }
+        
+        .item-row:hover {
+            background: rgba(139, 0, 0, 0.4);
+            border-color: rgba(255, 215, 0, 0.5);
+            transform: translateX(5px);
+        }
+        
+        .item-row.dragging {
+            opacity: 0.5;
+            transform: scale(1.02);
+        }
+
+        /* Inputs */
+        .casino-input {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+            font-family: 'Playfair Display', serif;
+        }
+        
+        .casino-input:focus {
+            border-color: #ffd700;
+            outline: none;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+        }
+        
+        .casino-select {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            color: #ffd700;
+        }
+
+        /* Modal */
+        .modal-backdrop {
+            background: rgba(0, 0, 0, 0.95);
+        }
+        
+        .modal-content {
+            background: linear-gradient(180deg, #1a0a0a 0%, #0d0505 100%);
+            border: 4px solid;
+            border-image: linear-gradient(180deg, #ffd700, #b8860b, #ffd700) 1;
+            box-shadow: 
+                0 0 100px rgba(255, 215, 0, 0.3),
+                inset 0 0 60px rgba(0, 0, 0, 0.5);
+        }
+        
+        .winner-text {
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(180deg, #ffd700 0%, #ffec8b 25%, #ffd700 50%, #b8860b 75%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: winner-glow 1s ease-in-out infinite alternate;
+        }
+        
+        @keyframes winner-glow {
+            from { filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5)); }
+            to { filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8)); }
+        }
+        
+        .winner-img {
+            border: 4px solid #ffd700;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            animation: winner-img-pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes winner-img-pulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 60px rgba(255, 215, 0, 0.8); }
+        }
+
+        /* Confetti */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            overflow: hidden;
+        }
+        
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Card suits decoration */
+        .suit-decoration {
+            position: absolute;
+            font-size: 100px;
+            opacity: 0.03;
+            color: #ffd700;
+            pointer-events: none;
+        }
+
+        /* Sound toggle */
+        .sound-toggle {
+            background: linear-gradient(180deg, #8b0000 0%, #5c0000 100%);
+            border: 2px solid #ffd700;
+            transition: all 0.3s ease;
+        }
+        
+        .sound-toggle:hover {
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .sound-toggle.muted {
+            opacity: 0.5;
+        }
+
+        /* Chips decoration */
+        .chip {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            position: absolute;
+            pointer-events: none;
+        }
+        
+        .chip-red {
+            background: repeating-conic-gradient(#8b0000 0deg 30deg, #5c0000 30deg 60deg);
+            border: 3px solid #ffd700;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+        }
+        
+        .chip-gold {
+            background: repeating-conic-gradient(#ffd700 0deg 30deg, #b8860b 30deg 60deg);
+            border: 3px solid #fff;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+        }
+
+        /* Label styling */
+        .casino-label {
+            color: #ffd700;
+            font-family: 'Cinzel', serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 11px;
+        }
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            border: 2px solid #ffd700;
+            border-radius: 50%;
+            cursor: pointer;
+            background: transparent;
+        }
+        
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        
+        input[type="color"]::-webkit-color-swatch {
+            border: none;
+            border-radius: 50%;
         }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4">
+<body class="flex flex-col items-center justify-center min-h-screen p-4 relative z-10">
+
+    <!-- Декоративні елементи -->
+    <div class="suit-decoration" style="top: 5%; left: 5%;">♠</div>
+    <div class="suit-decoration" style="top: 10%; right: 10%;">♥</div>
+    <div class="suit-decoration" style="bottom: 15%; left: 8%;">♦</div>
+    <div class="suit-decoration" style="bottom: 5%; right: 5%;">♣</div>
+
+    <!-- Контейнер конфеті -->
+    <div id="confetti-container" class="confetti-container"></div>
 
     <!-- Таймер -->
-    <div id="timer-container" class="hidden fixed top-10 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none">
-        <div class="bg-black/80 border-2 border-red-600 px-8 py-2 rounded-full backdrop-blur-md">
-            <span id="countdown-display" class="tense-timer text-5xl md:text-7xl font-black text-red-500 tracking-widest">
+    <div id="timer-container" class="hidden fixed top-6 left-1/2 transform -translate-x-1/2 z-50 pointer-events-none">
+        <div class="bg-black/95 border-4 border-red-600 px-10 py-4 rounded-lg shadow-2xl" style="box-shadow: 0 0 50px rgba(255,0,0,0.5);">
+            <span id="countdown-display" class="casino-timer text-5xl md:text-7xl font-black tracking-widest">
                 00.00
             </span>
         </div>
     </div>
 
-    <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center h-full">
+    <!-- Кнопка звуку -->
+    <button id="sound-toggle" class="sound-toggle fixed top-4 right-4 z-50 p-3 rounded-full" onclick="toggleSound()">
+        <svg id="sound-on-icon" class="w-6 h-6 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+        </svg>
+        <svg id="sound-off-icon" class="w-6 h-6 text-yellow-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>
+        </svg>
+    </button>
+
+    <!-- Заголовок -->
+    <div class="text-center mb-8 relative">
+        <div class="text-yellow-600 text-sm tracking-[0.5em] uppercase mb-2" style="font-family: 'Cinzel', serif;">
+            ♠ ♥ Premium Casino Experience ♣ ♦
+        </div>
+        <h1 class="text-4xl md:text-6xl font-black gold-text" style="font-family: 'Cinzel', serif;">
+            ROYAL ROULETTE
+        </h1>
+        <div class="text-red-500 text-lg tracking-widest mt-2" style="font-family: 'Cinzel', serif;">
+            Командна Рулетка
+        </div>
+    </div>
+
+    <div class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
         <!-- ПАНЕЛЬ НАЛАШТУВАНЬ -->
-        <div id="config-panel" class="lg:col-span-4 glass-panel rounded-xl p-6 h-fit transition-all duration-300">
-            <h2 class="text-2xl font-black uppercase text-white mb-6 border-b-2 border-gray-700 pb-2">
-                Налаштування
+        <div id="config-panel" class="lg:col-span-4 casino-panel rounded-lg p-6 transition-all duration-500">
+            <h2 class="text-xl font-black uppercase gold-text mb-6 pb-3 border-b border-yellow-600/30 flex items-center gap-3" style="font-family: 'Cinzel', serif;">
+                <span>⚙️</span> Налаштування
             </h2>
 
             <div class="space-y-6">
                 <!-- ПРЕСЕТИ -->
                 <div>
-                     <label class="text-sm text-gray-400 uppercase font-bold tracking-wider mb-2 block">
-                        Швидкий вибір (Пресети)
+                    <label class="casino-label mb-3 block flex items-center gap-2">
+                        <span>🎲</span> Швидкий вибір
                     </label>
                     <div class="grid grid-cols-3 gap-2">
-                        <button onclick="loadPreset('designers')" class="bg-purple-600 hover:bg-purple-500 text-white py-3 rounded-lg font-bold text-xs md:text-sm uppercase tracking-wider transition-colors shadow-md border-b-4 border-purple-800 active:border-b-0 active:translate-y-1">
-                            Дизайнери
+                        <button onclick="loadPreset('designers')" class="preset-btn py-3 rounded-lg font-bold text-xs tracking-wider">
+                            👨‍🎨 Дизайн
                         </button>
-                        <button onclick="loadPreset('producers')" class="bg-pink-600 hover:bg-pink-500 text-white py-3 rounded-lg font-bold text-xs md:text-sm uppercase tracking-wider transition-colors shadow-md border-b-4 border-pink-800 active:border-b-0 active:translate-y-1">
-                            Продюсери
+                        <button onclick="loadPreset('producers')" class="preset-btn py-3 rounded-lg font-bold text-xs tracking-wider">
+                            🎬 Продюс
                         </button>
-                         <button onclick="loadPreset('tasks')" class="bg-teal-600 hover:bg-teal-500 text-white py-3 rounded-lg font-bold text-xs md:text-sm uppercase tracking-wider transition-colors shadow-md border-b-4 border-teal-800 active:border-b-0 active:translate-y-1">
-                            Таски
+                        <button onclick="loadPreset('tasks')" class="preset-btn py-3 rounded-lg font-bold text-xs tracking-wider">
+                            📋 Таски
                         </button>
-                        <!-- Нові кнопки -->
-                        <button onclick="loadPreset('template')" class="bg-indigo-600 hover:bg-indigo-500 text-white py-3 rounded-lg font-bold text-xs md:text-sm uppercase tracking-wider transition-colors shadow-md border-b-4 border-indigo-800 active:border-b-0 active:translate-y-1">
-                            Темплейт
+                        <button onclick="loadPreset('template')" class="preset-btn py-3 rounded-lg font-bold text-xs tracking-wider">
+                            📝 Темпл
                         </button>
-                        <button onclick="loadPreset('influencer')" class="bg-orange-600 hover:bg-orange-500 text-white py-3 rounded-lg font-bold text-xs md:text-sm uppercase tracking-wider transition-colors shadow-md border-b-4 border-orange-800 active:border-b-0 active:translate-y-1">
-                            Інфлюенсер
+                        <button onclick="loadPreset('influencer')" class="preset-btn py-3 rounded-lg font-bold text-xs tracking-wider">
+                            🌟 Інфл
+                        </button>
+                        <button onclick="loadPreset('custom')" class="preset-btn py-3 rounded-lg font-bold text-xs tracking-wider">
+                            💾 Збер
                         </button>
                     </div>
                 </div>
 
-                <div class="h-[1px] bg-gray-700 w-full"></div>
+                <div class="h-px bg-gradient-to-r from-transparent via-yellow-600/50 to-transparent"></div>
 
                 <!-- Час та Повтори -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="text-sm text-gray-400 uppercase font-bold tracking-wider mb-2 block">
-                            Час (сек)
+                        <label class="casino-label mb-2 block flex items-center gap-2">
+                            <span>⏱️</span> Час (сек)
                         </label>
-                        <div class="flex items-center gap-2">
-                            <input type="number" id="duration-number" value="10" min="1" max="60" class="w-full bg-gray-800 border border-gray-600 text-white text-center rounded p-2 font-bold">
-                        </div>
+                        <input type="number" id="duration-number" value="10" min="1" max="60" class="casino-input w-full text-center rounded-lg p-3 font-bold">
                     </div>
                     <div>
-                        <label class="text-sm text-gray-400 uppercase font-bold tracking-wider mb-2 block">
-                            Повтори
+                        <label class="casino-label mb-2 block flex items-center gap-2">
+                            <span>🔄</span> Повтори
                         </label>
-                        <select id="sector-multiplier" onchange="drawWheel()" class="w-full bg-gray-800 border border-gray-600 text-white rounded p-2 font-bold cursor-pointer">
-                            <option value="1">x1 (Стандарт)</option>
-                            <option value="2">x2 (Подвоїти)</option>
-                            <option value="3" selected>x3 (Потроїти)</option>
-                            <option value="4">x4 (Максимум)</option>
+                        <select id="sector-multiplier" onchange="drawWheel()" class="casino-select w-full rounded-lg p-3 font-bold cursor-pointer">
+                            <option value="1">x1</option>
+                            <option value="2">x2</option>
+                            <option value="3" selected>x3</option>
+                            <option value="4">x4</option>
                         </select>
                     </div>
                 </div>
-                
-                <input type="range" id="spin-duration" min="1" max="60" value="10" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer hidden">
 
                 <!-- Список -->
                 <div>
-                    <div class="flex justify-between items-end mb-3">
-                        <label class="text-sm text-gray-400 uppercase font-bold tracking-wider block">Сектори</label>
-                        <button onclick="addItem()" class="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded font-bold uppercase transition-colors">
-                            + Додати
-                        </button>
+                    <div class="flex justify-between items-center mb-3">
+                        <label class="casino-label flex items-center gap-2">
+                            <span>🎯</span> Сектори
+                        </label>
+                        <div class="flex gap-2">
+                            <button onclick="saveCustomPreset()" class="text-xs bg-green-800 hover:bg-green-700 text-yellow-400 px-3 py-2 rounded-lg font-bold border border-yellow-600/50 transition-all" title="Зберегти">
+                                💾
+                            </button>
+                            <button onclick="addItem()" class="text-xs bg-red-900 hover:bg-red-800 text-yellow-400 px-3 py-2 rounded-lg font-bold border border-yellow-600/50 transition-all">
+                                + Додати
+                            </button>
+                        </div>
                     </div>
                     
-                    <div id="items-list" class="space-y-2 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
+                    <div id="items-list" class="space-y-2 max-h-[280px] overflow-y-auto custom-scrollbar pr-2">
                     </div>
                 </div>
             </div>
 
-            <button id="main-spin-btn" onclick="spinWheel()" class="flat-btn w-full mt-8 py-5 rounded-lg text-white font-black text-2xl uppercase tracking-widest">
-                КРУТИТИ!
+            <button id="main-spin-btn" onclick="spinWheel()" class="spin-btn w-full mt-6 py-5 rounded-lg font-black text-xl md:text-2xl">
+                🎰 КРУТИТИ
             </button>
+            
+            <div id="history-container" class="mt-4 hidden">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="casino-label">📜 Історія</span>
+                    <button onclick="clearHistory()" class="text-xs text-red-400 hover:text-red-300">Очистити</button>
+                </div>
+                <div id="history-list" class="flex flex-wrap gap-2"></div>
+            </div>
         </div>
 
         <!-- ЗОНА КОЛЕСА -->
-        <div class="lg:col-span-8 flex flex-col items-center justify-center relative w-full h-full min-h-[500px]">
+        <div class="lg:col-span-8 flex flex-col items-center justify-center relative w-full min-h-[500px]">
             
-            <div class="relative w-[350px] h-[350px] sm:w-[500px] sm:h-[500px] md:w-[600px] md:h-[600px]">
-                <!-- Контейнер стрілки -->
-                <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 z-20">
-                    <div id="pointer-body" class="pointer-sharp w-0 h-0 border-l-[25px] border-l-transparent border-r-[25px] border-r-transparent border-t-[50px] border-t-red-600 drop-shadow-lg origin-[50%_0%]"></div>
-                </div>
-
-                <!-- Саме колесо -->
-                <canvas id="wheel-canvas" width="600" height="600" class="w-full h-full rounded-full shadow-2xl ring-8 ring-gray-800 bg-gray-800"></canvas>
+            <div id="wheel-wrapper" class="relative">
                 
-                <!-- Центр колеса -->
-                <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-gray-900 rounded-full shadow-xl flex items-center justify-center z-10 border-4 border-gray-700">
-                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center">
-                         <span class="text-black font-black text-xl">GO</span>
+                <!-- Рамка колеса -->
+                <div class="wheel-frame w-[320px] h-[320px] sm:w-[450px] sm:h-[450px] md:w-[550px] md:h-[550px]">
+                    
+                    <!-- Стрілка -->
+                    <div class="absolute -top-16 left-1/2 transform -translate-x-1/2 z-30">
+                        <div id="pointer-body" class="casino-pointer">
+                            <svg width="60" height="80" viewBox="0 0 60 80">
+                                <defs>
+                                    <linearGradient id="pointerGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#ffd700"/>
+                                        <stop offset="50%" style="stop-color:#b8860b"/>
+                                        <stop offset="100%" style="stop-color:#8b6914"/>
+                                    </linearGradient>
+                                    <linearGradient id="pointerShine" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" style="stop-color:rgba(255,255,255,0)"/>
+                                        <stop offset="50%" style="stop-color:rgba(255,255,255,0.3)"/>
+                                        <stop offset="100%" style="stop-color:rgba(255,255,255,0)"/>
+                                    </linearGradient>
+                                </defs>
+                                <polygon points="30,80 5,10 30,20 55,10" fill="url(#pointerGrad)" stroke="#ffd700" stroke-width="2"/>
+                                <polygon points="30,75 15,15 30,22 45,15" fill="url(#pointerShine)"/>
+                                <circle cx="30" cy="15" r="8" fill="#ffd700" stroke="#8b6914" stroke-width="2"/>
+                                <circle cx="30" cy="15" r="4" fill="#8b0000"/>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Колесо -->
+                    <canvas id="wheel-canvas" width="600" height="600" class="w-full h-full rounded-full"></canvas>
+                    
+                    <!-- Центр колеса -->
+                    <div class="center-hub absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 md:w-32 md:h-32 rounded-full flex items-center justify-center z-10">
+                        <div class="center-hub-inner w-16 h-16 md:w-24 md:h-24 rounded-full flex items-center justify-center">
+                            <span class="text-yellow-400 font-black text-xl md:text-3xl" style="font-family: 'Cinzel', serif;">GO</span>
+                        </div>
                     </div>
                 </div>
+
+                <!-- Декоративні фішки -->
+                <div class="chip chip-red hidden md:block" style="top: 0; left: -60px;"></div>
+                <div class="chip chip-gold hidden md:block" style="top: 40px; left: -40px;"></div>
+                <div class="chip chip-red hidden md:block" style="bottom: 20px; right: -50px;"></div>
+                <div class="chip chip-gold hidden md:block" style="bottom: 60px; right: -30px;"></div>
             </div>
 
         </div>
     </div>
 
     <!-- Модальне вікно переможця -->
-    <div id="result-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/90 backdrop-blur-sm">
-        <div class="bg-[#2a2a2a] border-4 border-white p-8 rounded-2xl max-w-md w-full text-center transform scale-100 transition-all shadow-2xl">
+    <div id="result-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center px-4 modal-backdrop">
+        <div class="modal-content p-8 md:p-12 rounded-lg max-w-lg w-full text-center">
             
-            <h2 class="text-3xl font-black text-white uppercase mb-4 tracking-wider">Результат</h2>
+            <div class="text-6xl mb-4">🏆</div>
+            
+            <div class="text-yellow-600 text-sm tracking-[0.3em] uppercase mb-2" style="font-family: 'Cinzel', serif;">
+                ♠ ♥ Вітаємо! ♣ ♦
+            </div>
+            
+            <h2 class="text-2xl md:text-3xl font-black gold-text uppercase mb-2 tracking-wider" style="font-family: 'Cinzel', serif;">
+                JACKPOT!
+            </h2>
             
             <div class="my-8">
-                <div id="winner-img-container" class="w-40 h-40 rounded-full mx-auto mb-6 bg-cover bg-center border-8 border-white shadow-lg hidden"></div>
-                <div id="winner-text" class="text-4xl md:text-5xl font-black text-yellow-400 break-words leading-tight"></div>
+                <div id="winner-img-container" class="winner-img w-36 h-36 md:w-48 md:h-48 rounded-full mx-auto mb-6 bg-cover bg-center hidden"></div>
+                <div id="winner-text" class="winner-text text-4xl md:text-6xl font-black break-words leading-tight"></div>
             </div>
 
-            <button onclick="closeModal()" class="w-full py-4 bg-white hover:bg-gray-200 text-black rounded-xl font-bold text-xl uppercase transition-colors">
-                OK
+            <button onclick="closeModal()" class="spin-btn w-full py-4 rounded-lg font-bold text-xl uppercase">
+                Чудово! ✨
             </button>
         </div>
     </div>
 
 <script>
+    // Casino colors - red and black like roulette
     const flatColors = [
-        '#FF3B30', '#FF9500', '#FFCC00', '#4CD964', 
-        '#5AC8FA', '#007AFF', '#5856D6', '#FF2D55'
+        '#8B0000', '#1a1a1a', '#B22222', '#2d2d2d', 
+        '#DC143C', '#3d3d3d', '#CD5C5C', '#4d4d4d',
+        '#A52A2A', '#5d5d5d', '#800000', '#6d6d6d'
     ];
 
-    // --- НАЛАШТУВАННЯ ПРЕСЕТІВ ---
-    // Тут ти можеш редагувати списки вручну
-    
+    // Пресети
     const presets = {
         designers: [
             { name: 'Богдан', img: 'bohdan.png' },
@@ -235,7 +693,6 @@
             { name: 'Google', img: '' },
             { name: 'ASO', img: '' }
         ],
-        // ЗАПОВНИ ЦЕЙ РОЗДІЛ:
         template: [
             { name: 'Hook', img: '' },
             { name: 'Infl', img: '' },
@@ -245,25 +702,98 @@
             { name: 'CTA', img: '' },
             { name: 'Dsgn', img: '' }
         ],
-        // ЗАПОВНИ ЦЕЙ РОЗДІЛ:
         influencer: [
             { name: 'Блогер A', img: '' },
             { name: 'Блогер B', img: '' },
             { name: 'Блогер C', img: '' }
-        ]
+        ],
+        custom: []
     };
 
     let items = [];
-
     let spinDuration = 10;
     let isSpinning = false;
     let currentRotation = 0;
+    let soundEnabled = true;
+    let history = [];
+
+    // Audio context
+    let audioContext = null;
+
+    function initAudio() {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    }
+
+    function playTickSound() {
+        if (!soundEnabled || !audioContext) return;
+        
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.value = 1200 + Math.random() * 200;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.03);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.03);
+    }
+
+    function playWinSound() {
+        if (!soundEnabled || !audioContext) return;
+        
+        // Casino win sound - ascending notes
+        const notes = [392, 523.25, 659.25, 783.99, 1046.50]; // G4, C5, E5, G5, C6
+        
+        notes.forEach((freq, i) => {
+            setTimeout(() => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.value = freq;
+                oscillator.type = 'triangle';
+                
+                gainNode.gain.setValueAtTime(0.15, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.4);
+            }, i * 80);
+        });
+    }
+
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        const btn = document.getElementById('sound-toggle');
+        const iconOn = document.getElementById('sound-on-icon');
+        const iconOff = document.getElementById('sound-off-icon');
+        
+        if (soundEnabled) {
+            btn.classList.remove('muted');
+            iconOn.classList.remove('hidden');
+            iconOff.classList.add('hidden');
+        } else {
+            btn.classList.add('muted');
+            iconOn.classList.add('hidden');
+            iconOff.classList.remove('hidden');
+        }
+        
+        localStorage.setItem('roulette_sound', soundEnabled);
+    }
 
     // Elements
     const itemsList = document.getElementById('items-list');
     const canvas = document.getElementById('wheel-canvas');
     const ctx = canvas.getContext('2d');
-    const durationInput = document.getElementById('spin-duration');
     const durationNumber = document.getElementById('duration-number');
     const multiplierInput = document.getElementById('sector-multiplier');
     const resultModal = document.getElementById('result-modal');
@@ -272,8 +802,26 @@
     const timerContainer = document.getElementById('timer-container');
     const countdownDisplay = document.getElementById('countdown-display');
     const pointerBody = document.getElementById('pointer-body');
+    const wheelWrapper = document.getElementById('wheel-wrapper');
 
     function init() {
+        const savedSound = localStorage.getItem('roulette_sound');
+        if (savedSound !== null) {
+            soundEnabled = savedSound === 'true';
+            if (!soundEnabled) toggleSound();
+        }
+        
+        const savedHistory = localStorage.getItem('roulette_history');
+        if (savedHistory) {
+            history = JSON.parse(savedHistory);
+            renderHistory();
+        }
+        
+        const savedCustom = localStorage.getItem('roulette_custom');
+        if (savedCustom) {
+            presets.custom = JSON.parse(savedCustom);
+        }
+        
         loadPreset('designers');
         
         durationNumber.addEventListener('input', (e) => {
@@ -281,12 +829,18 @@
             if(val > 60) val = 60;
             if(val < 1) val = 1;
             spinDuration = val;
-            durationInput.value = val;
         });
+
+        document.body.addEventListener('click', initAudio, { once: true });
     }
 
     function loadPreset(type) {
-        if (!presets[type]) return;
+        if (!presets[type] || presets[type].length === 0) {
+            if (type === 'custom') {
+                alert('Немає збережених даних. Спочатку збережіть поточні налаштування.');
+            }
+            return;
+        }
         
         items = presets[type].map((entry, index) => {
             let text = typeof entry === 'string' ? entry : entry.name;
@@ -321,33 +875,88 @@
         drawWheel();
     }
 
-    // --- ЛОГІКА СПИСКУ ---
+    function saveCustomPreset() {
+        const dataToSave = items.map(item => ({
+            name: item.text,
+            img: item.image && !item.image.startsWith('data:') ? item.image : ''
+        }));
+        
+        presets.custom = dataToSave;
+        localStorage.setItem('roulette_custom', JSON.stringify(dataToSave));
+        
+        const btn = event.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '✓';
+        btn.classList.add('bg-green-600');
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.classList.remove('bg-green-600');
+        }, 1000);
+    }
+
+    // Drag and Drop
+    let draggedItem = null;
+    let draggedIndex = null;
+
+    function handleDragStart(e, index) {
+        draggedItem = items[index];
+        draggedIndex = index;
+        e.target.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+    }
+
+    function handleDrop(e, index) {
+        e.preventDefault();
+        if (draggedIndex !== null && draggedIndex !== index) {
+            items.splice(draggedIndex, 1);
+            items.splice(index, 0, draggedItem);
+            renderItemsList();
+            drawWheel();
+        }
+    }
+
+    function handleDragEnd(e) {
+        e.target.classList.remove('dragging');
+        draggedItem = null;
+        draggedIndex = null;
+    }
+
     function renderItemsList() {
         itemsList.innerHTML = '';
         items.forEach((item, index) => {
             const row = document.createElement('div');
-            row.className = 'flex items-center gap-2 bg-[#333] p-3 rounded border border-[#444]';
+            row.className = 'item-row flex items-center gap-2 p-3 rounded-lg cursor-move';
+            row.draggable = true;
+            row.ondragstart = (e) => handleDragStart(e, index);
+            row.ondragover = handleDragOver;
+            row.ondrop = (e) => handleDrop(e, index);
+            row.ondragend = handleDragEnd;
             
-            let imgPreview = `<div class="w-10 h-10 rounded-full bg-[#444] flex items-center justify-center text-gray-400 font-bold text-xs">IMG</div>`;
+            let imgPreview = `<div class="w-9 h-9 rounded-full bg-black/50 flex items-center justify-center text-yellow-600 font-bold text-xs border border-yellow-600/30">📷</div>`;
             
             if (item.imgObj) {
-                imgPreview = `<div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-[#4CD964]" style="background-image: url('${item.image}')"></div>`;
-            } 
-            else if (item.image && item.image.startsWith('data:')) {
-                 imgPreview = `<div class="w-10 h-10 rounded-full bg-cover bg-center border-2 border-white" style="background-image: url('${item.image}')"></div>`;
+                imgPreview = `<div class="w-9 h-9 rounded-full bg-cover bg-center border-2 border-yellow-500 shadow-lg" style="background-image: url('${item.image}')"></div>`;
+            } else if (item.image && item.image.startsWith('data:')) {
+                imgPreview = `<div class="w-9 h-9 rounded-full bg-cover bg-center border-2 border-yellow-600/50 shadow-lg" style="background-image: url('${item.image}')"></div>`;
             }
 
             row.innerHTML = `
-                <input type="color" value="${item.color}" onchange="updateItem(${index}, 'color', this.value)" class="w-8 h-10 rounded cursor-pointer border-none bg-transparent">
+                <span class="text-yellow-600/50 cursor-move">⋮⋮</span>
+                <input type="color" value="${item.color}" onchange="updateItem(${index}, 'color', this.value)" class="w-7 h-7 rounded-full cursor-pointer">
                 <div class="flex-1">
-                    <input type="text" value="${item.text}" oninput="updateItem(${index}, 'text', this.value)" class="w-full bg-transparent text-white font-bold text-lg focus:outline-none placeholder-gray-500" placeholder="Назва">
+                    <input type="text" value="${item.text}" oninput="updateItem(${index}, 'text', this.value)" class="w-full bg-transparent text-yellow-100 font-bold focus:outline-none placeholder-yellow-900" placeholder="Назва">
                 </div>
-                <label class="cursor-pointer hover:opacity-80 transition-opacity" title="Завантажити фото локально">
+                <label class="cursor-pointer hover:opacity-80 transition-opacity hover:scale-110" title="Завантажити фото">
                     <input type="file" accept="image/*" class="hidden" onchange="handleImageUpload(${index}, this)">
                     ${imgPreview}
                 </label>
-                <input type="number" step="0.1" min="0.1" value="${item.weight}" onchange="updateItem(${index}, 'weight', this.value)" class="w-12 bg-[#222] text-center text-white rounded py-2 font-bold border border-[#444]" title="Шанс">
-                <button onclick="removeItem(${index})" class="text-gray-500 hover:text-red-500 px-2 text-2xl font-bold">&times;</button>
+                <input type="number" step="0.1" min="0.1" value="${item.weight}" onchange="updateItem(${index}, 'weight', this.value)" class="casino-input w-12 text-center text-sm rounded-lg py-1 font-bold" title="Шанс">
+                <button onclick="removeItem(${index})" class="text-yellow-600/50 hover:text-red-500 px-1 text-xl font-bold transition-colors hover:scale-110">×</button>
             `;
             itemsList.appendChild(row);
         });
@@ -391,8 +1000,6 @@
         }
     }
 
-    // --- ДОПОМІЖНІ ФУНКЦІЇ ДЛЯ МУЛЬТИПЛІКАТОРА ---
-    
     function getTotalWeightSingleSet() {
         return items.reduce((sum, item) => sum + item.weight, 0);
     }
@@ -404,7 +1011,7 @@
         const height = canvas.height;
         const centerX = width / 2;
         const centerY = height / 2;
-        const radius = width / 2 - 10;
+        const radius = width / 2 - 20;
 
         ctx.clearRect(0, 0, width, height);
         
@@ -420,47 +1027,73 @@
         ctx.translate(centerX, centerY);
         ctx.rotate(currentRotation * Math.PI / 180);
 
+        // Outer ring decoration
+        ctx.beginPath();
+        ctx.arc(0, 0, radius + 5, 0, Math.PI * 2);
+        ctx.strokeStyle = '#ffd700';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
         for (let m = 0; m < multiplier; m++) {
             for (let i = 0; i < items.length; i++) {
                 const item = items[i];
                 const sliceAngle = (item.weight / totalWeightAll) * 2 * Math.PI;
                 const endAngle = startAngle + sliceAngle;
 
+                // Draw sector
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
                 ctx.arc(0, 0, radius, startAngle, endAngle);
                 ctx.closePath();
-                ctx.fillStyle = item.color;
+                
+                // Gradient for sector
+                const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, radius);
+                gradient.addColorStop(0, lightenColor(item.color, 40));
+                gradient.addColorStop(0.3, lightenColor(item.color, 20));
+                gradient.addColorStop(0.7, item.color);
+                gradient.addColorStop(1, darkenColor(item.color, 30));
+                
+                ctx.fillStyle = gradient;
                 ctx.fill();
                 
-                ctx.strokeStyle = "#1e1e1e";
-                ctx.lineWidth = 4;
+                // Gold border between sectors
+                ctx.strokeStyle = "#ffd700";
+                ctx.lineWidth = 2;
                 ctx.stroke();
 
+                // Text and image
                 ctx.save();
                 const angleMid = startAngle + sliceAngle / 2;
                 ctx.rotate(angleMid);
                 
-                ctx.fillStyle = "#fff";
-                ctx.font = multiplier > 2 ? "900 16px Montserrat" : "900 24px Montserrat";
+                ctx.fillStyle = "#ffd700";
+                ctx.font = multiplier > 2 ? "bold 14px 'Cinzel', serif" : "bold 18px 'Cinzel', serif";
                 ctx.textAlign = "right";
                 ctx.textBaseline = "middle";
-                ctx.shadowColor = "rgba(0,0,0,0.5)";
+                ctx.shadowColor = "rgba(0,0,0,0.8)";
                 ctx.shadowBlur = 4;
+                ctx.shadowOffsetX = 2;
+                ctx.shadowOffsetY = 2;
 
-                const contentRadius = radius - 20;
+                const contentRadius = radius - 30;
 
                 if (item.imgObj) {
-                    const imgSize = multiplier > 2 ? 60 : 100;
-                    const imgDist = contentRadius - (multiplier > 2 ? 40 : 55); 
+                    const imgSize = multiplier > 2 ? 45 : 70;
+                    const imgDist = contentRadius - (multiplier > 2 ? 30 : 45); 
 
                     if (item.text.trim() !== "") {
-                        ctx.font = multiplier > 2 ? "bold 14px Montserrat" : "bold 18px Montserrat";
-                        ctx.fillText(item.text, imgDist - (multiplier > 2 ? 40 : 60), 0);
+                        ctx.font = multiplier > 2 ? "bold 11px 'Cinzel', serif" : "bold 14px 'Cinzel', serif";
+                        ctx.fillText(item.text, imgDist - (multiplier > 2 ? 30 : 45), 0);
                     }
 
                     ctx.translate(imgDist, 0); 
                     ctx.rotate(Math.PI / 2);
+
+                    // Gold border for image
+                    ctx.beginPath();
+                    ctx.arc(0, 0, imgSize / 2 + 3, 0, Math.PI * 2);
+                    ctx.fillStyle = "#ffd700";
+                    ctx.fill();
 
                     ctx.beginPath();
                     ctx.arc(0, 0, imgSize / 2, 0, Math.PI * 2);
@@ -468,15 +1101,9 @@
                     ctx.save(); 
                     ctx.clip();
                     ctx.drawImage(item.imgObj, -imgSize/2, -imgSize/2, imgSize, imgSize);
-                    ctx.restore(); 
-                    
-                    ctx.beginPath();
-                    ctx.arc(0, 0, imgSize / 2, 0, Math.PI * 2);
-                    ctx.lineWidth = 4;
-                    ctx.strokeStyle = "#fff";
-                    ctx.stroke();
+                    ctx.restore();
                 } else {
-                    ctx.fillText(item.text, contentRadius - 20, 0);
+                    ctx.fillText(item.text, contentRadius - 25, 0);
                 }
 
                 ctx.restore();
@@ -484,16 +1111,44 @@
             }
         }
 
+        // Inner decorative ring
+        ctx.beginPath();
+        ctx.arc(0, 0, 55, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        ctx.fill();
+        ctx.strokeStyle = '#ffd700';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
         ctx.restore();
     }
 
-    // --- ЛОГІКА АНІМАЦІЇ ---
+    function lightenColor(color, percent) {
+        const num = parseInt(color.replace('#', ''), 16);
+        const amt = Math.round(2.55 * percent);
+        const R = Math.min(255, (num >> 16) + amt);
+        const G = Math.min(255, (num >> 8 & 0x00FF) + amt);
+        const B = Math.min(255, (num & 0x0000FF) + amt);
+        return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+    }
+
+    function darkenColor(color, percent) {
+        const num = parseInt(color.replace('#', ''), 16);
+        const amt = Math.round(2.55 * percent);
+        const R = Math.max(0, (num >> 16) - amt);
+        const G = Math.max(0, (num >> 8 & 0x00FF) - amt);
+        const B = Math.max(0, (num & 0x0000FF) - amt);
+        return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+    }
 
     function spinWheel() {
         if (isSpinning) return;
         if(items.length < 1) return;
 
+        initAudio();
         isSpinning = true;
+        wheelWrapper.classList.add('spinning');
+        
         const btn = document.getElementById('main-spin-btn');
         const configPanel = document.getElementById('config-panel');
         
@@ -503,7 +1158,7 @@
         timerContainer.classList.remove('hidden');
         countdownDisplay.classList.remove('pulse-anim');
 
-        const minSpins = 10; 
+        const minSpins = 8 + Math.floor(Math.random() * 4);
         const randomDegree = Math.floor(Math.random() * 360);
         const totalDegrees = (minSpins * 360) + randomDegree;
         
@@ -524,11 +1179,11 @@
             
             if (elapsed < durationSec) {
                 const t = elapsed / durationSec;
-                const ease = 1 - Math.pow(1 - t, 5);
+                const ease = 1 - Math.pow(1 - t, 4);
                 
                 const newRotation = startRotation + (endRotation - startRotation) * ease;
                 
-                // --- ЛОГІКА ТІКЕРА ---
+                // Ticker logic
                 const multiplier = parseInt(multiplierInput.value) || 1;
                 const totalWeightOneSet = getTotalWeightSingleSet();
                 const totalWeightAll = totalWeightOneSet * multiplier;
@@ -553,13 +1208,13 @@
                 }
 
                 if (currentTickGlobalIndex !== lastTickIndex && lastTickIndex !== -1) {
-                    pointerBody.style.transform = "rotate(-25deg)";
+                    pointerBody.style.transform = "rotate(-15deg)";
+                    playTickSound();
                     setTimeout(() => {
-                         pointerBody.style.transform = "rotate(0deg)";
-                    }, 100);
+                        pointerBody.style.transform = "rotate(0deg)";
+                    }, 60);
                 }
                 lastTickIndex = currentTickGlobalIndex;
-                // ---------------------
 
                 currentRotation = newRotation;
                 drawWheel();
@@ -568,6 +1223,7 @@
                 currentRotation = endRotation % 360;
                 drawWheel();
                 isSpinning = false;
+                wheelWrapper.classList.remove('spinning');
                 
                 btn.disabled = false;
                 configPanel.classList.remove('opacity-30', 'pointer-events-none');
@@ -613,6 +1269,9 @@
     }
 
     function showResult(item) {
+        playWinSound();
+        createConfetti();
+        
         winnerText.innerText = item.text || "";
         
         let bgImage = null;
@@ -628,11 +1287,70 @@
         } else {
             winnerImgContainer.classList.add('hidden');
         }
+        
         resultModal.classList.remove('hidden');
+        
+        addToHistory(item.text);
+    }
+
+    function addToHistory(name) {
+        history.unshift({ name, time: new Date().toLocaleTimeString() });
+        if (history.length > 10) history.pop();
+        localStorage.setItem('roulette_history', JSON.stringify(history));
+        renderHistory();
+    }
+
+    function renderHistory() {
+        const container = document.getElementById('history-container');
+        const list = document.getElementById('history-list');
+        
+        if (history.length === 0) {
+            container.classList.add('hidden');
+            return;
+        }
+        
+        container.classList.remove('hidden');
+        list.innerHTML = history.map(h => 
+            `<span class="bg-red-900/50 border border-yellow-600/30 px-3 py-1 rounded-full text-sm text-yellow-200" title="${h.time}">${h.name}</span>`
+        ).join('');
+    }
+
+    function clearHistory() {
+        history = [];
+        localStorage.removeItem('roulette_history');
+        renderHistory();
     }
 
     function closeModal() {
         resultModal.classList.add('hidden');
+        clearConfetti();
+    }
+
+    // Confetti - casino style (gold, red, black)
+    function createConfetti() {
+        const container = document.getElementById('confetti-container');
+        const colors = ['#ffd700', '#b8860b', '#8b0000', '#dc143c', '#fff', '#ffec8b'];
+        const shapes = ['●', '◆', '♠', '♥', '♣', '♦', '★'];
+        
+        for (let i = 0; i < 100; i++) {
+            const confetti = document.createElement('div');
+            confetti.className = 'confetti';
+            confetti.style.left = Math.random() * 100 + '%';
+            confetti.style.color = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.fontSize = (Math.random() * 20 + 10) + 'px';
+            confetti.style.textShadow = '0 0 10px currentColor';
+            confetti.innerText = shapes[Math.floor(Math.random() * shapes.length)];
+            confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear forwards`;
+            confetti.style.animationDelay = Math.random() * 0.5 + 's';
+            container.appendChild(confetti);
+        }
+    }
+
+    function clearConfetti() {
+        const container = document.getElementById('confetti-container');
+        setTimeout(() => {
+            container.innerHTML = '';
+        }, 500);
     }
 
     init();
